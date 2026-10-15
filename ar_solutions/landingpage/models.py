@@ -88,6 +88,8 @@ class SinglePage(models.Model):
     hero_subtitle = models.TextField(blank=True, default="কোনো বিষ বা আঠা ছাড়া, ১০০% নিরাপদ এবং বারবার ব্যবহারযোগ্য।")
     hero_image = models.ImageField(upload_to='landingpages/', blank=True, null=True)
     video_url = models.URLField(blank=True, null=True, help_text="Optional YouTube embed link")
+    auto_scroll_images = models.BooleanField(default=True, help_text="Automatically slide hero gallery images")
+    auto_scroll_interval = models.PositiveIntegerField(default=3, help_text="Slide change interval in seconds")
 
     # Pricing Box
     regular_price = models.DecimalField(max_digits=10, decimal_places=2, default=600)
@@ -129,6 +131,52 @@ class SinglePage(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def all_images(self):
+        imgs = []
+        if self.hero_image:
+            imgs.append(self.hero_image.url)
+        for img_obj in self.images.all():
+            if img_obj.image and img_obj.image.url not in imgs:
+                imgs.append(img_obj.image.url)
+        if not imgs and self.linked_product and self.linked_product.image:
+            imgs.append(self.linked_product.image.url)
+        return imgs
+
+    @property
+    def embed_video_url(self):
+        if not self.video_url:
+            return ""
+        url = self.video_url.strip()
+        if 'youtube.com/embed/' in url:
+            return url
+        if 'youtube.com/watch?v=' in url:
+            try:
+                video_id = url.split('watch?v=')[1].split('&')[0]
+                return f"https://www.youtube.com/embed/{video_id}"
+            except Exception:
+                return url
+        if 'youtu.be/' in url:
+            try:
+                video_id = url.split('youtu.be/')[1].split('?')[0]
+                return f"https://www.youtube.com/embed/{video_id}"
+            except Exception:
+                return url
+        return url
+
+
+class SinglePageImage(models.Model):
+    single_page = models.ForeignKey(SinglePage, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='landingpages/gallery/')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.single_page.title} - Image #{self.id}"
 
 
 class SinglePageBundle(models.Model):

@@ -138,7 +138,7 @@
                                     {{ form.hero_subtitle }}
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Hero / Product Main Image</label>
+                                    <label class="form-label fw-bold">Hero / Product Main Image (Cover)</label>
                                     {{ form.hero_image }}
                                     {% if single_page and single_page.hero_image %}
                                         <div class="mt-2">
@@ -150,6 +150,93 @@
                                     <label class="form-label fw-bold">YouTube Video Embed URL (Optional)</label>
                                     {{ form.video_url }}
                                 </div>
+
+                                <!-- Auto-Scroll Gallery Settings -->
+                                <div class="col-md-12 mt-2">
+                                    <div class="p-3 bg-white border rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-3 shadow-sm">
+                                        <div class="form-check form-switch mb-0">
+                                            {{ form.auto_scroll_images }}
+                                            <label class="form-check-label fw-bold ms-2" for="{{ form.auto_scroll_images.id_for_label }}">
+                                                <i class="bi bi-play-circle text-success me-1"></i> Automatic Image Scrolling (Autoplay)
+                                            </label>
+                                            <div class="text-muted small">Automatically slides to the next gallery photo periodically. Pauses on hover/touch.</div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <label class="form-label mb-0 small fw-bold text-nowrap">Scroll Speed:</label>
+                                            <div class="input-group input-group-sm" style="width: 140px;">
+                                                {{ form.auto_scroll_interval }}
+                                                <span class="input-group-text">sec</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Multiple Image Upload Field -->
+                                <div class="col-md-12 mt-3">
+                                    <div class="border rounded-3 p-3 bg-light border-primary-subtle">
+                                        <label class="form-label fw-bold d-flex justify-content-between align-items-center mb-1">
+                                            <span><i class="bi bi-images text-primary me-1"></i> Add Multiple Product Gallery Images</span>
+                                            <span class="badge bg-primary">Multi-Upload</span>
+                                        </label>
+                                        <p class="text-muted small mb-2">
+                                            Select one or multiple photos from your device (drag-and-drop or Ctrl/Shift+Click). They will be added as interactive gallery thumbnails under the hero image.
+                                        </p>
+                                        <input type="file" name="extra_images" multiple accept="image/*" class="form-control">
+                                    </div>
+                                </div>
+
+                                <!-- Existing Gallery Images Management -->
+                                {% if images_formset %}
+                                <div class="col-md-12 mt-3">
+                                    <div class="card stat-card">
+                                        <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+                                            <strong><i class="bi bi-collection-play me-1 text-primary"></i> Gallery Images List</strong>
+                                            <small class="text-muted">Preview, reorder, or delete existing gallery images</small>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            {{ images_formset.management_form }}
+                                            <div class="table-responsive">
+                                                <table class="table table-hover align-middle mb-0">
+                                                    <thead class="table-light">
+                                                        <tr>
+                                                            <th style="width:80px;">Thumbnail</th>
+                                                            <th>Image File</th>
+                                                            <th style="width:90px;">Order</th>
+                                                            <th style="width:70px;" class="text-center">Delete</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for img_form in images_formset %}
+                                                        <tr>
+                                                            <td>
+                                                                {% if img_form.instance.pk and img_form.instance.image %}
+                                                                    <img src="{{ img_form.instance.image.url }}" width="60" height="48" style="object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
+                                                                {% else %}
+                                                                    <span class="badge bg-light text-muted border">New</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {{ img_form.id }}
+                                                                {{ img_form.image }}
+                                                                {% if img_form.image.errors %}
+                                                                    <div class="text-danger small">{{ img_form.image.errors }}</div>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ img_form.order }}</td>
+                                                            <td class="text-center">
+                                                                {% if img_form.instance.pk %}
+                                                                    {{ img_form.DELETE }}
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -384,4 +471,38 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Auto-generate slug from title if slug is empty
+    const titleInput = document.getElementById('id_title');
+    const slugInput = document.getElementById('id_slug');
+    if (titleInput && slugInput && !slugInput.value) {
+        titleInput.addEventListener('input', function() {
+            if (!slugInput.dataset.manualEdit) {
+                slugInput.value = this.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[\s\W-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+        });
+        slugInput.addEventListener('input', function() {
+            slugInput.dataset.manualEdit = "true";
+        });
+    }
+
+    // 2. Highlight tabs that contain form errors
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        if (pane.querySelector('.text-danger') || pane.querySelector('.is-invalid')) {
+            const tabId = pane.id;
+            const tabBtn = document.querySelector(`[data-bs-target="#${tabId}"]`);
+            if (tabBtn) {
+                tabBtn.classList.add('text-danger', 'fw-bold');
+                tabBtn.innerHTML += ' <span class="badge bg-danger rounded-pill">!</span>';
+            }
+        }
+    });
+});
+</script>
 {% endblock %}

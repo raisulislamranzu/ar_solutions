@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
-from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle
+from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle, SinglePageImage
 
 
 class CategoryForm(forms.ModelForm):
@@ -89,6 +89,7 @@ class SinglePageForm(forms.ModelForm):
             'title', 'slug', 'linked_product', 'is_active',
             'announcement_text', 'brand_name', 'header_cta_text',
             'hero_title', 'hero_subtitle', 'hero_image', 'video_url',
+            'auto_scroll_images', 'auto_scroll_interval',
             'regular_price', 'discount_price', 'delivery_note', 'hero_cta_text',
             'features_title',
             'feature_1_icon', 'feature_1_title', 'feature_1_desc',
@@ -113,6 +114,8 @@ class SinglePageForm(forms.ModelForm):
             'hero_subtitle': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'hero_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'video_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/...'}),
+            'auto_scroll_images': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'auto_scroll_interval': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 30}),
 
             'regular_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'discount_price': forms.NumberInput(attrs={'class': 'form-control'}),
@@ -161,5 +164,18 @@ SinglePageBundleFormSet = inlineformset_factory(
         'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
         'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         'order': forms.NumberInput(attrs={'class': 'form-control'}),
+    }
+)
+
+
+SinglePageImageFormSet = inlineformset_factory(
+    SinglePage,
+    SinglePageImage,
+    fields=['image', 'order'],
+    extra=2,
+    can_delete=True,
+    widgets={
+        'image': forms.ClearableFileInput(attrs={'class': 'form-control form-control-sm'}),
+        'order': forms.NumberInput(attrs={'class': 'form-control form-control-sm', 'style': 'width:70px;'}),
     }
 )
