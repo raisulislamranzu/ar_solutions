@@ -5,8 +5,11 @@ from django.db.models import Sum, Count, Q
 from django.db import models
 from django.db.models.functions import TruncDate
 
-from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle
-from .forms import ProductForm, CategoryForm, OrderForm, SiteSettingForm, SinglePageForm, SinglePageBundleFormSet
+from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle, SinglePageImage
+from .forms import (
+    ProductForm, CategoryForm, OrderForm, SiteSettingForm,
+    SinglePageForm, SinglePageBundleFormSet, SinglePageImageFormSet
+)
 
 
 # Only staff users are allowed into the custom admin panel.
@@ -260,18 +263,27 @@ def single_page_create(request):
     if request.method == 'POST':
         form = SinglePageForm(request.POST, request.FILES)
         formset = SinglePageBundleFormSet(request.POST)
-        if form.is_valid() and formset.is_valid():
+        images_formset = SinglePageImageFormSet(request.POST, request.FILES)
+        if form.is_valid() and formset.is_valid() and images_formset.is_valid():
             single_page = form.save()
             formset.instance = single_page
             formset.save()
+            images_formset.instance = single_page
+            images_formset.save()
+            # Also process any multi-selected extra images
+            extra_files = request.FILES.getlist('extra_images')
+            for f in extra_files:
+                SinglePageImage.objects.create(single_page=single_page, image=f)
             messages.success(request, f'Single Page "{single_page.title}" created successfully.')
             return redirect('custom_admin:single_page_list')
     else:
         form = SinglePageForm()
         formset = SinglePageBundleFormSet()
+        images_formset = SinglePageImageFormSet()
     return render(request, 'custom_admin/single_page_form.html', {
         'form': form,
         'formset': formset,
+        'images_formset': images_formset,
         'title': 'Create Single Page',
     })
 
@@ -283,17 +295,25 @@ def single_page_edit(request, pk):
     if request.method == 'POST':
         form = SinglePageForm(request.POST, request.FILES, instance=single_page)
         formset = SinglePageBundleFormSet(request.POST, instance=single_page)
-        if form.is_valid() and formset.is_valid():
+        images_formset = SinglePageImageFormSet(request.POST, request.FILES, instance=single_page)
+        if form.is_valid() and formset.is_valid() and images_formset.is_valid():
             form.save()
             formset.save()
+            images_formset.save()
+            # Also process any multi-selected extra images
+            extra_files = request.FILES.getlist('extra_images')
+            for f in extra_files:
+                SinglePageImage.objects.create(single_page=single_page, image=f)
             messages.success(request, f'Single Page "{single_page.title}" updated successfully.')
             return redirect('custom_admin:single_page_list')
     else:
         form = SinglePageForm(instance=single_page)
         formset = SinglePageBundleFormSet(instance=single_page)
+        images_formset = SinglePageImageFormSet(instance=single_page)
     return render(request, 'custom_admin/single_page_form.html', {
         'form': form,
         'formset': formset,
+        'images_formset': images_formset,
         'title': f'Edit Single Page: {single_page.title}',
         'single_page': single_page,
     })
