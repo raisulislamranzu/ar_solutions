@@ -471,4 +471,38 @@
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Auto-generate slug from title if slug is empty
+    const titleInput = document.getElementById('id_title');
+    const slugInput = document.getElementById('id_slug');
+    if (titleInput && slugInput && !slugInput.value) {
+        titleInput.addEventListener('input', function() {
+            if (!slugInput.dataset.manualEdit) {
+                slugInput.value = this.value
+                    .toLowerCase()
+                    .trim()
+                    .replace(/[\s\W-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+        });
+        slugInput.addEventListener('input', function() {
+            slugInput.dataset.manualEdit = "true";
+        });
+    }
+
+    // 2. Highlight tabs that contain form errors
+    document.querySelectorAll('.tab-pane').forEach(pane => {
+        if (pane.querySelector('.text-danger') || pane.querySelector('.is-invalid')) {
+            const tabId = pane.id;
+            const tabBtn = document.querySelector(`[data-bs-target="#${tabId}"]`);
+            if (tabBtn) {
+                tabBtn.classList.add('text-danger', 'fw-bold');
+                tabBtn.innerHTML += ' <span class="badge bg-danger rounded-pill">!</span>';
+            }
+        }
+    });
+});
+</script>
 {% endblock %}
