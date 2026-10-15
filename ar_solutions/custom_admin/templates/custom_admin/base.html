@@ -54,6 +54,11 @@
                 </a>
             </li>
             <li>
+                <a href="{% url 'custom_admin:single_page_list' %}" class="{% if 'single_page' in request.resolver_match.url_name %}active{% endif %}">
+                    <i class="bi bi-file-earmark-richtext"></i> Single Pages
+                </a>
+            </li>
+            <li>
                 <a href="{% url 'custom_admin:order_list' %}" class="{% if 'order' in request.resolver_match.url_name %}active{% endif %}">
                     <i class="bi bi-cart3"></i> Orders
                 </a>

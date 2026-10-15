@@ -1,0 +1,540 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }} | {% if site %}{{ site.site_name }}{% else %}AR SOLUTIONS BD{% endif %}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', '"Hind Siliguri"', 'sans-serif'],
+                        bn: ['"Hind Siliguri"', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            teal: '#0B3C49',
+                            tealDark: '#07262F',
+                            tealLight: '#145A6D',
+                            green: '#25A264',
+                            greenHover: '#1E8752',
+                            greenLight: '#E8F7F0',
+                            accent: '#F59E0B'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+            background-color: #F8FAFC;
+        }
+        .text-shadow-sm {
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
+        }
+        .pulse-btn {
+            animation: pulse-ring 2s infinite cubic-bezier(.66, 0, 0, 1);
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 162, 100, 0.7); }
+            70% { transform: scale(1.03); box-shadow: 0 0 0 14px rgba(37, 162, 100, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 162, 100, 0); }
+        }
+        .sticky-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="antialiased text-slate-800 pb-24 md:pb-0 font-bn">
+
+    <!-- Top Announcement Bar -->
+    <div class="bg-brand-tealDark text-emerald-300 text-center py-2.5 px-4 text-xs sm:text-sm font-semibold tracking-wide border-b border-white/10 flex items-center justify-center gap-2">
+        <span>{{ page.announcement_text }}</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-slate-100">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center max-w-4xl">
+            <a href="/" class="flex items-center gap-2 text-decoration-none">
+                {% if site and site.logo %}
+                    <img src="{{ site.logo.url }}" alt="{{ site.site_name }}" class="h-9 w-auto object-contain">
+                {% else %}
+                    <div class="w-9 h-9 rounded-lg bg-brand-teal flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        <i class="fa-solid fa-cube text-brand-green"></i>
+                    </div>
+                {% endif %}
+                <span class="text-xl sm:text-2xl font-bold text-brand-teal font-sans">
+                    {% if page.brand_name %}
+                        {{ page.brand_name }}
+                    {% elif site %}
+                        {{ site.site_name }}
+                    {% else %}
+                        AR SOLUTIONS BD
+                    {% endif %}
+                </span>
+            </a>
+            <div class="flex items-center gap-3">
+                {% if page.footer_helpline or site.helpline %}
+                    <a href="tel:{{ page.footer_helpline|default:site.helpline }}" class="hidden sm:inline-flex items-center gap-1.5 text-xs text-brand-teal font-semibold hover:text-brand-green transition">
+                        <i class="fa-solid fa-phone text-brand-green"></i> {{ page.footer_helpline|default:site.helpline }}
+                    </a>
+                {% endif %}
+                <a href="#order-form" class="bg-brand-green hover:bg-brand-greenHover text-white px-4 sm:px-6 py-2 rounded-lg font-semibold text-sm transition shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-xs"></i> {{ page.header_cta_text|default:"অর্ডার করুন" }}
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-4 py-8 max-w-4xl text-center">
+        <!-- Hero Headline -->
+        <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-brand-teal mb-3 leading-tight tracking-tight">
+            {{ page.hero_title }}
+        </h1>
+        {% if page.hero_subtitle %}
+            <p class="text-base sm:text-lg md:text-xl text-slate-600 mb-6 font-medium max-w-2xl mx-auto">
+                {{ page.hero_subtitle }}
+            </p>
+        {% endif %}
+
+        <!-- Product Image or Video -->
+        <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg border border-slate-200/80 mb-8 max-w-2xl mx-auto overflow-hidden">
+            {% if page.hero_image %}
+                <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" class="w-full rounded-xl object-contain max-h-[420px] mx-auto transition-transform hover:scale-[1.01] duration-300">
+            {% elif page.linked_product and page.linked_product.image %}
+                <img src="{{ page.linked_product.image.url }}" alt="{{ page.title }}" class="w-full rounded-xl object-contain max-h-[420px] mx-auto">
+            {% else %}
+                <div class="w-full h-72 sm:h-96 bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                    <i class="fa-regular fa-image text-5xl mb-2"></i>
+                    <span class="text-sm">Product Image</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pricing & CTA Highlight Card -->
+        <div class="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-white border-2 border-brand-green/40 rounded-2xl p-6 sm:p-8 mb-10 max-w-2xl mx-auto shadow-md relative overflow-hidden">
+            <div class="flex justify-center items-center gap-4 sm:gap-6 mb-4 flex-wrap">
+                {% if page.regular_price %}
+                    <div class="text-slate-400 text-lg sm:text-2xl line-through font-semibold">
+                        মূল্য: ৳{{ page.regular_price|floatformat:0 }}
+                    </div>
+                {% endif %}
+                <div class="text-brand-green text-3xl sm:text-4xl font-extrabold text-shadow-sm flex items-center gap-1">
+                    <span>অফার মূল্য:</span> <span>৳{{ page.discount_price|floatformat:0 }}</span>
+                </div>
+            </div>
+
+            {% if page.delivery_note %}
+                <div class="inline-flex items-center gap-2 bg-white/80 border border-brand-green/30 px-4 py-1.5 rounded-full text-brand-teal font-bold mb-6 text-sm sm:text-base shadow-sm">
+                    <i class="fa-solid fa-truck-fast text-brand-green"></i> {{ page.delivery_note }}
+                </div>
+            {% endif %}
+
+            <a href="#order-form" class="pulse-btn block w-full bg-brand-green hover:bg-brand-greenHover text-white text-xl sm:text-2xl font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-3">
+                <i class="fa-solid fa-cart-shopping"></i> {{ page.hero_cta_text|default:"এখনই অর্ডার করুন" }}
+            </a>
+            <div class="mt-3 flex justify-center items-center gap-6 text-xs sm:text-sm text-slate-500">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-brand-green"></i> ১০০% অরিজিনাল পণ্য</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand-holding-dollar text-brand-green"></i> ক্যাশ অন ডেলিভারি</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us / Features -->
+    <section class="bg-white py-12 sm:py-16 border-t border-b border-slate-200">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="text-center mb-10">
+                <span class="text-brand-green bg-brand-greenLight font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Features</span>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-teal mt-2">
+                    {{ page.features_title }}
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                <!-- Feature 1 -->
+                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-brand-greenLight text-brand-green flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        <i class="{{ page.feature_1_icon|default:'fas fa-leaf' }}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_1_title }}</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">{{ page.feature_1_desc }}</p>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        <i class="{{ page.feature_2_icon|default:'fas fa-sync-alt' }}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_2_title }}</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">{{ page.feature_2_desc }}</p>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        <i class="{{ page.feature_3_icon|default:'fas fa-bolt' }}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_3_title }}</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">{{ page.feature_3_desc }}</p>
+                    </div>
+                </div>
+                <!-- Feature 4 -->
+                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+                        <i class="{{ page.feature_4_icon|default:'fas fa-hand-sparkles' }}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_4_title }}</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">{{ page.feature_4_desc }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Checkout / Order Form Section -->
+    <section id="order-form" class="container mx-auto px-4 py-12 sm:py-16 max-w-4xl scroll-mt-20">
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-slate-200">
+            <!-- Form Header -->
+            <div class="bg-brand-tealDark text-white text-center py-5 px-4 border-b border-white/10">
+                <span class="inline-block bg-brand-green/20 text-brand-green text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-1">
+                    ক্যাশ অন ডেলিভারি
+                </span>
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold">
+                    {{ page.form_title }}
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1">
+                    পণ্য হাতে পেয়ে চেক করে সম্পূর্ণ মূল্য পরিশোধ করুন।
+                </p>
+            </div>
+
+            <div class="p-5 sm:p-8 md:p-10 grid grid-cols-1 md:grid-cols-12 gap-8">
+                <!-- Form Inputs -->
+                <div class="md:col-span-7">
+                    <form id="checkoutForm" method="POST" action="{% url 'single_page_order' page.slug %}">
+                        {% csrf_token %}
+                        
+                        <!-- Bundle / Package Selection -->
+                        <div class="mb-6">
+                            <label class="block text-brand-teal text-base sm:text-lg font-bold mb-3 border-b border-slate-200 pb-2 flex items-center justify-between">
+                                <span>প্যাকেজ নির্বাচন করুন <span class="text-rose-500">*</span></span>
+                                <span class="text-xs text-slate-400 font-normal">যেকোনো একটি নির্বাচন করুন</span>
+                            </label>
+
+                            <div class="space-y-3" id="bundleOptionsContainer">
+                                {% if page.bundles.all %}
+                                    {% for bundle in page.bundles.all %}
+                                        <label class="relative block cursor-pointer">
+                                            <input type="radio" 
+                                                   name="bundle_id" 
+                                                   value="{{ bundle.id }}" 
+                                                   data-name="{{ bundle.name }}"
+                                                   data-price="{{ bundle.price }}"
+                                                   data-quantity="{{ bundle.quantity }}"
+                                                   class="peer sr-only" 
+                                                   {% if forloop.first or bundle.is_default %}checked{% endif %}
+                                                   onchange="calculateTotal()">
+                                            <div class="flex items-center justify-between p-4 border-2 border-slate-200 rounded-xl peer-checked:border-brand-green peer-checked:bg-brand-greenLight/40 hover:bg-slate-50 transition">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-brand-green flex items-center justify-center shrink-0">
+                                                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green {% if not forloop.first and not bundle.is_default %}hidden{% endif %} radio-dot"></div>
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-bold text-slate-800 text-sm sm:text-base block">{{ bundle.name }}</span>
+                                                        <span class="text-xs text-slate-500">পরিমাণ: {{ bundle.quantity }} টি</span>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    {% if bundle.original_price %}
+                                                        <span class="text-xs text-slate-400 line-through block">৳{{ bundle.original_price|floatformat:0 }}</span>
+                                                    {% endif %}
+                                                    <span class="font-extrabold text-base sm:text-lg text-brand-green block">৳{{ bundle.price|floatformat:0 }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="absolute right-4 top-1/2 -translate-y-1/2 hidden peer-checked:block text-brand-green">
+                                                <i class="fa-solid fa-circle-check text-xl"></i>
+                                            </div>
+                                        </label>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Fallback to single page base pricing if no bundles created -->
+                                    <label class="relative block cursor-pointer">
+                                        <input type="radio" 
+                                               name="bundle_id" 
+                                               value="default" 
+                                               data-name="{{ page.title }}"
+                                               data-price="{{ page.discount_price }}"
+                                               data-quantity="1"
+                                               class="peer sr-only" 
+                                               checked
+                                               onchange="calculateTotal()">
+                                        <div class="flex items-center justify-between p-4 border-2 border-brand-green bg-brand-greenLight/40 rounded-xl">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-5 h-5 rounded-full border-2 border-brand-green flex items-center justify-center shrink-0">
+                                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-green radio-dot"></div>
+                                                </div>
+                                                <span class="font-bold text-slate-800">{{ page.title }}</span>
+                                            </div>
+                                            <span class="font-extrabold text-lg text-brand-green">৳{{ page.discount_price|floatformat:0 }}</span>
+                                        </div>
+                                    </label>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Customer Name -->
+                        <div class="mb-4">
+                            <label class="block text-slate-700 font-bold mb-1.5 text-sm sm:text-base">
+                                আপনার নাম <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-user"></i>
+                                </span>
+                                <input type="text" 
+                                       name="customer_name" 
+                                       id="name" 
+                                       required 
+                                       class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 text-slate-800 transition" 
+                                       placeholder="সম্পূর্ণ নাম লিখুন">
+                            </div>
+                        </div>
+
+                        <!-- Customer Phone -->
+                        <div class="mb-4">
+                            <label class="block text-slate-700 font-bold mb-1.5 text-sm sm:text-base">
+                                মোবাইল নাম্বার <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-phone"></i>
+                                </span>
+                                <input type="tel" 
+                                       name="phone_number" 
+                                       id="phone" 
+                                       required 
+                                       class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 text-slate-800 transition" 
+                                       placeholder="০১৭xxxxxxxx">
+                            </div>
+                        </div>
+
+                        <!-- Customer Address -->
+                        <div class="mb-5">
+                            <label class="block text-slate-700 font-bold mb-1.5 text-sm sm:text-base">
+                                সম্পূর্ণ ঠিকানা <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <span class="absolute top-3.5 left-3.5 text-slate-400 pointer-events-none">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </span>
+                                <textarea name="address" 
+                                          id="address" 
+                                          required 
+                                          rows="3" 
+                                          class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 text-slate-800 transition" 
+                                          placeholder="বাসা নং/রোড নং, এলাকা, থানা, জেলা"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Delivery Area -->
+                        <div class="mb-6">
+                            <label class="block text-slate-700 font-bold mb-2.5 text-sm sm:text-base">
+                                ডেলিভারি এলাকা নির্বাচন করুন <span class="text-rose-500">*</span>
+                            </label>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center p-3.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                    <input type="radio" 
+                                           name="delivery_area" 
+                                           value="Inside Dhaka" 
+                                           data-charge="{{ page.delivery_inside_dhaka }}" 
+                                           class="h-5 w-5 text-brand-green focus:ring-brand-green border-slate-300 accent-emerald-600" 
+                                           checked 
+                                           onchange="calculateTotal()">
+                                    <span class="ml-3 font-medium text-slate-800 text-sm sm:text-base flex-grow">ঢাকার ভিতরে</span>
+                                    <span class="font-bold text-brand-teal">৳{{ page.delivery_inside_dhaka }}</span>
+                                </label>
+                                <label class="flex items-center p-3.5 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition">
+                                    <input type="radio" 
+                                           name="delivery_area" 
+                                           value="Outside Dhaka" 
+                                           data-charge="{{ page.delivery_outside_dhaka }}" 
+                                           class="h-5 w-5 text-brand-green focus:ring-brand-green border-slate-300 accent-emerald-600" 
+                                           onchange="calculateTotal()">
+                                    <span class="ml-3 font-medium text-slate-800 text-sm sm:text-base flex-grow">ঢাকার বাহিরে</span>
+                                    <span class="font-bold text-brand-teal">৳{{ page.delivery_outside_dhaka }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Order Summary Card -->
+                <div class="md:col-span-5">
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 h-fit sticky top-24 shadow-sm">
+                        <h3 class="text-lg sm:text-xl font-bold text-brand-teal mb-4 border-b border-slate-200 pb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-receipt text-brand-green"></i> অর্ডার সামারি
+                        </h3>
+
+                        <div class="space-y-3 text-sm sm:text-base mb-4">
+                            <div class="flex justify-between items-start gap-2">
+                                <span id="bundleNameDisplay" class="font-medium text-slate-700 leading-tight">প্যাকেজ</span>
+                                <span id="bundlePriceDisplay" class="font-bold text-slate-900 shrink-0">৳ 0</span>
+                            </div>
+
+                            <div class="flex justify-between items-center text-slate-600">
+                                <span>ডেলিভারি চার্জ</span>
+                                <span id="deliveryChargeDisplay" class="font-bold text-slate-900">৳ {{ page.delivery_inside_dhaka }}</span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4 border-slate-300 border-dashed">
+
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="font-bold text-slate-800 text-lg">সর্বমোট</span>
+                            <span id="totalPriceDisplay" class="font-extrabold text-brand-green text-2xl sm:text-3xl">৳ 0</span>
+                        </div>
+
+                        <button type="submit" 
+                                form="checkoutForm" 
+                                id="submitBtn"
+                                class="w-full bg-brand-green hover:bg-brand-greenHover text-white text-lg sm:text-xl font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-circle-check"></i> {{ page.submit_button_text|default:"অর্ডার কনফার্ম করুন" }}
+                        </button>
+
+                        <div class="mt-4 pt-3 border-t border-slate-200 text-center space-y-1.5 text-xs text-slate-500">
+                            <p class="flex items-center justify-center gap-1.5 font-medium text-slate-600">
+                                <i class="fa-solid fa-shield-halved text-brand-green"></i> ১০০% নিরাপদ চেকআউট
+                            </p>
+                            <p>ক্যাশ অন ডেলিভারিতে কোনো অগ্রিম পেমেন্ট নেই</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand-tealDark text-slate-400 py-10 text-center border-t border-white/10 pb-28 md:pb-10">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <h4 class="text-white text-xl sm:text-2xl font-bold mb-2 font-sans">
+                {% if page.brand_name %}{{ page.brand_name }}{% elif site %}{{ site.site_name }}{% else %}AR SOLUTIONS BD{% endif %}
+            </h4>
+            <p class="text-sm text-slate-300 mb-4">
+                {% if page.footer_helpline %}
+                    হেল্পলাইন: {{ page.footer_helpline }}
+                {% elif site and site.helpline %}
+                    হেল্পলাইন: {{ site.helpline }}
+                {% endif %}
+                {% if page.footer_email %}
+                    | ইমেইল: {{ page.footer_email }}
+                {% endif %}
+            </p>
+            <p class="text-xs text-slate-400">
+                {% if page.footer_copyright %}
+                    {{ page.footer_copyright }}
+                {% else %}
+                    © {% now "Y" %} {% if site %}{{ site.site_name }}{% else %}AR SOLUTIONS BD{% endif %}. All rights reserved.
+                {% endif %}
+            </p>
+        </div>
+    </footer>
+
+    <!-- Sticky Bottom Bar for Mobile -->
+    <div class="sticky-bottom-bar md:hidden flex justify-between items-center gap-3">
+        <div class="text-left">
+            <span class="block text-[11px] text-slate-500 leading-none">শুরুর মূল্য</span>
+            <span class="block text-lg font-bold text-brand-green leading-tight">৳{{ page.discount_price|floatformat:0 }}</span>
+        </div>
+        <a href="#order-form" class="flex-grow pulse-btn bg-brand-green text-white text-base font-bold py-3 px-5 rounded-xl shadow-md text-center flex justify-center items-center gap-2">
+            <i class="fa-solid fa-cart-shopping"></i> {{ page.header_cta_text|default:"অর্ডার করুন" }}
+        </a>
+    </div>
+
+    <!-- JavaScript for Dynamic Calculation and UI -->
+    <script>
+        function calculateTotal() {
+            // Find selected bundle
+            const bundleRadios = document.querySelectorAll('input[name="bundle_id"]');
+            let bundlePrice = 0;
+            let bundleName = "";
+
+            bundleRadios.forEach(radio => {
+                const dot = radio.closest('label').querySelector('.radio-dot');
+                if (radio.checked) {
+                    bundlePrice = parseFloat(radio.getAttribute('data-price') || 0);
+                    bundleName = radio.getAttribute('data-name') || "";
+                    if (dot) dot.classList.remove('hidden');
+                } else {
+                    if (dot) dot.classList.add('hidden');
+                }
+            });
+
+            // If no radio found (or default fallback)
+            if (bundlePrice === 0 && bundleRadios.length > 0) {
+                bundlePrice = parseFloat(bundleRadios[0].getAttribute('data-price') || 0);
+                bundleName = bundleRadios[0].getAttribute('data-name') || "";
+            }
+
+            // Find selected delivery area
+            const deliveryRadios = document.querySelectorAll('input[name="delivery_area"]');
+            let deliveryCharge = {{ page.delivery_inside_dhaka|default:60 }};
+
+            deliveryRadios.forEach(radio => {
+                if (radio.checked) {
+                    deliveryCharge = parseFloat(radio.getAttribute('data-charge') || 0);
+                }
+            });
+
+            const total = bundlePrice + deliveryCharge;
+
+            // Update summary UI
+            document.getElementById('bundleNameDisplay').innerText = bundleName;
+            document.getElementById('bundlePriceDisplay').innerText = '৳ ' + Math.round(bundlePrice);
+            document.getElementById('deliveryChargeDisplay').innerText = '৳ ' + Math.round(deliveryCharge);
+            document.getElementById('totalPriceDisplay').innerText = '৳ ' + Math.round(total);
+        }
+
+        // Initialize calculation on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateTotal();
+            
+            // Handle form submission UX
+            const form = document.getElementById('checkoutForm');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    const btn = document.getElementById('submitBtn');
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> প্রসেসিং হচ্ছে...';
+                        btn.classList.add('opacity-75', 'cursor-not-allowed');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

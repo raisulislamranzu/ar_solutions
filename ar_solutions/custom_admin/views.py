@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
+from django.db import models
 from django.db.models.functions import TruncDate
 
-from landingpage.models import Product, Category, Order, SiteSetting
-from .forms import ProductForm, CategoryForm, OrderForm, SiteSettingForm
+from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle
+from .forms import ProductForm, CategoryForm, OrderForm, SiteSettingForm, SinglePageForm, SinglePageBundleFormSet
 
 
 # Only staff users are allowed into the custom admin panel.
@@ -160,11 +161,16 @@ def category_delete(request, pk):
 def order_list(request):
     status = request.GET.get('status', '')
     query = request.GET.get('q', '')
-    orders = Order.objects.select_related('product').all()
+    orders = Order.objects.select_related('product', 'landing_page').order_by('-created_at')
     if status:
         orders = orders.filter(status=status)
     if query:
-        orders = orders.filter(customer_name__icontains=query) | orders.filter(phone_number__icontains=query)
+        orders = orders.filter(
+            models.Q(customer_name__icontains=query) |
+            models.Q(phone_number__icontains=query) |
+            models.Q(package_name__icontains=query) |
+            models.Q(landing_page__title__icontains=query)
+        )
     return render(request, 'custom_admin/order_list.html', {
         'orders': orders,
         'status': status,
@@ -176,7 +182,7 @@ def order_list(request):
 @login_required(login_url='custom_admin:login')
 @user_passes_test(is_staff_user, login_url='custom_admin:login')
 def order_detail(request, pk):
-    order = get_object_or_404(Order.objects.select_related('product'), pk=pk)
+    order = get_object_or_404(Order.objects.select_related('product', 'landing_page'), pk=pk)
     return render(request, 'custom_admin/order_detail.html', {'order': order})
 
 
@@ -233,6 +239,77 @@ def site_setting_edit(request):
     else:
         form = SiteSettingForm(instance=setting)
     return render(request, 'custom_admin/site_setting_form.html', {'form': form})
+
+
+# ---------------------------------------------------------------------------
+# Single Page (Landing Page) CRUD
+# ---------------------------------------------------------------------------
+@login_required(login_url='custom_admin:login')
+@user_passes_test(is_staff_user, login_url='custom_admin:login')
+def single_page_list(request):
+    query = request.GET.get('q', '').strip()
+    pages = SinglePage.objects.annotate(order_count=Count('orders')).select_related('linked_product').prefetch_related('bundles').all()
+    if query:
+        pages = pages.filter(title__icontains=query) | pages.filter(slug__icontains=query)
+    return render(request, 'custom_admin/single_page_list.html', {'pages': pages, 'query': query})
+
+
+@login_required(login_url='custom_admin:login')
+@user_passes_test(is_staff_user, login_url='custom_admin:login')
+def single_page_create(request):
+    if request.method == 'POST':
+        form = SinglePageForm(request.POST, request.FILES)
+        formset = SinglePageBundleFormSet(request.POST)
+        if form.is_valid() and formset.is_valid():
+            single_page = form.save()
+            formset.instance = single_page
+            formset.save()
+            messages.success(request, f'Single Page "{single_page.title}" created successfully.')
+            return redirect('custom_admin:single_page_list')
+    else:
+        form = SinglePageForm()
+        formset = SinglePageBundleFormSet()
+    return render(request, 'custom_admin/single_page_form.html', {
+        'form': form,
+        'formset': formset,
+        'title': 'Create Single Page',
+    })
+
+
+@login_required(login_url='custom_admin:login')
+@user_passes_test(is_staff_user, login_url='custom_admin:login')
+def single_page_edit(request, pk):
+    single_page = get_object_or_404(SinglePage, pk=pk)
+    if request.method == 'POST':
+        form = SinglePageForm(request.POST, request.FILES, instance=single_page)
+        formset = SinglePageBundleFormSet(request.POST, instance=single_page)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            messages.success(request, f'Single Page "{single_page.title}" updated successfully.')
+            return redirect('custom_admin:single_page_list')
+    else:
+        form = SinglePageForm(instance=single_page)
+        formset = SinglePageBundleFormSet(instance=single_page)
+    return render(request, 'custom_admin/single_page_form.html', {
+        'form': form,
+        'formset': formset,
+        'title': f'Edit Single Page: {single_page.title}',
+        'single_page': single_page,
+    })
+
+
+@login_required(login_url='custom_admin:login')
+@user_passes_test(is_staff_user, login_url='custom_admin:login')
+def single_page_delete(request, pk):
+    single_page = get_object_or_404(SinglePage, pk=pk)
+    if request.method == 'POST':
+        title = single_page.title
+        single_page.delete()
+        messages.success(request, f'Single Page "{title}" deleted successfully.')
+        return redirect('custom_admin:single_page_list')
+    return render(request, 'custom_admin/single_page_confirm_delete.html', {'object': single_page, 'type': 'Single Page'})
+
 
 
 

@@ -37,7 +37,19 @@
                         <td>{{ order.id }}</td>
                         <td>{{ order.customer_name }}</td>
                         <td>{{ order.phone_number }}</td>
-                        <td>{{ order.product.title|default:"—" }}</td>
+                        <td>
+                            {% if order.product %}
+                                <strong>{{ order.product.title }}</strong>
+                                {% if order.package_name %}<small class="text-muted d-block">Pkg: {{ order.package_name }}</small>{% endif %}
+                            {% elif order.landing_page %}
+                                <strong>{{ order.landing_page.title }}</strong>
+                                {% if order.package_name %}<span class="badge bg-light text-success border d-block mt-1">{{ order.package_name }}</span>{% endif %}
+                            {% elif order.package_name %}
+                                <strong>{{ order.package_name }}</strong>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
                         <td>৳ {{ order.total_bill }}</td>
                         <td>
                             {% if order.status == 'Completed' %}<span class="badge bg-success">Completed</span>

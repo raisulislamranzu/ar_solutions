@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from .models import SiteSetting, Product, Order, Category
+from .models import SiteSetting, Product, Order, Category, SinglePage, SinglePageBundle
 
 def _build_products_data(products):
     """Serialize active products into plain dicts for the store-front JavaScript."""
@@ -44,6 +44,105 @@ def home(request):
     }
     return render(request, 'landingpage/home.html', context)
 
+def single_page_detail(request, slug):
+    site_setting = SiteSetting.objects.first()
+    page = get_object_or_404(SinglePage.objects.prefetch_related('bundles'), slug=slug, is_active=True)
+    return render(request, 'landingpage/single_page.html', {
+        'site': site_setting,
+        'page': page,
+    })
+
+
+@require_POST
+def single_page_order(request, slug):
+    page = get_object_or_404(SinglePage, slug=slug, is_active=True)
+    
+    if request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+        except Exception:
+            return JsonResponse({'success': False, 'message': 'Invalid data'}, status=400)
+        name = (data.get('customer_name') or '').strip()
+        phone = (data.get('phone_number') or '').strip()
+        address = (data.get('address') or '').strip()
+        area = data.get('delivery_area') or 'Inside Dhaka'
+        bundle_id = data.get('bundle_id')
+    else:
+        name = (request.POST.get('customer_name') or '').strip()
+        phone = (request.POST.get('phone_number') or '').strip()
+        address = (request.POST.get('address') or '').strip()
+        area = request.POST.get('delivery_area') or 'Inside Dhaka'
+        bundle_id = request.POST.get('bundle_id')
+
+    if not (name and phone and address):
+        if request.content_type == 'application/json':
+            return JsonResponse({'success': False, 'message': 'অনুগ্রহ করে সব তথ্য সঠিকভাবে পূরণ করুন।'}, status=400)
+        return redirect('single_page_detail', slug=slug)
+
+    # Determine bundle / package pricing
+    package_name = page.title
+    quantity = 1
+    sub_total = page.discount_price
+
+    if bundle_id and str(bundle_id) != 'default':
+        try:
+            bundle = page.bundles.get(pk=bundle_id)
+            package_name = bundle.name
+            sub_total = bundle.price
+            quantity = bundle.quantity
+        except (SinglePageBundle.DoesNotExist, ValueError):
+            pass
+
+    # Delivery charge
+    if area == 'Outside Dhaka':
+        delivery_charge = page.delivery_outside_dhaka
+    else:
+        delivery_charge = page.delivery_inside_dhaka
+
+    total_bill = sub_total + delivery_charge
+
+    order = Order.objects.create(
+        product=page.linked_product,
+        landing_page=page,
+        package_name=package_name,
+        customer_name=name,
+        phone_number=phone,
+        address=address,
+        delivery_area=area,
+        quantity=quantity,
+        sub_total=sub_total,
+        delivery_charge=delivery_charge,
+        total_bill=total_bill,
+        status='Pending'
+    )
+
+    if request.content_type == 'application/json':
+        return JsonResponse({
+            'success': True,
+            'order_id': order.id,
+            'redirect_url': '/success/'
+        })
+
+    return redirect('success')
+
+
+def dynamic_landing_dispatcher(request, slug):
+    """
+    Intelligent slug router:
+    1. If a SinglePage with this slug exists and is active, render the custom single page.
+    2. Else if a Product with this slug exists and is active, render product_landing.
+    3. Else 404.
+    """
+    single_page = SinglePage.objects.filter(slug=slug, is_active=True).prefetch_related('bundles').first()
+    if single_page:
+        site_setting = SiteSetting.objects.first()
+        return render(request, 'landingpage/single_page.html', {
+            'site': site_setting,
+            'page': single_page,
+        })
+    return product_landing(request, slug)
+
+
 # নির্দিষ্ট প্রোডাক্টের ল্যান্ডিং পেজ
 def product_landing(request, slug):
     site_setting = SiteSetting.objects.first()
@@ -78,6 +177,7 @@ def product_landing(request, slug):
         'product': product,
     }
     return render(request, 'landingpage/index.html', context)
+
 
 def success(request):
     site_setting = SiteSetting.objects.first()

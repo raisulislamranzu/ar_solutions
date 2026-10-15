@@ -67,6 +67,86 @@ class Product(models.Model):
     def highlight_list(self):
         return [line.strip() for line in self.highlights.splitlines() if line.strip()]
 
+class SinglePage(models.Model):
+    # Basic
+    title = models.CharField(max_length=200, help_text="Page title / Internal name")
+    slug = models.SlugField(max_length=200, unique=True, help_text="Unique URL link, e.g. magic-mouse-trap")
+    linked_product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, help_text="Optional linked product from inventory")
+    is_active = models.BooleanField(default=True, help_text="Uncheck to temporarily hide this page")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Top Announcement Bar
+    announcement_text = models.CharField(max_length=255, default="🔥 সীমিত সময়ের অফার! স্টক শেষ হওয়ার আগেই অর্ডার করুন! 🔥")
+
+    # Header
+    brand_name = models.CharField(max_length=100, blank=True, default="", help_text="Leave blank to use Site Name")
+    header_cta_text = models.CharField(max_length=50, default="অর্ডার করুন")
+
+    # Hero Section
+    hero_title = models.CharField(max_length=255, default="ইঁদুরের যন্ত্রণায় অতিষ্ঠ? চিরতরে মুক্তি পান ম্যাজিক মাউস ট্র্যাপ দিয়ে!")
+    hero_subtitle = models.TextField(blank=True, default="কোনো বিষ বা আঠা ছাড়া, ১০০% নিরাপদ এবং বারবার ব্যবহারযোগ্য।")
+    hero_image = models.ImageField(upload_to='landingpages/', blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True, help_text="Optional YouTube embed link")
+
+    # Pricing Box
+    regular_price = models.DecimalField(max_digits=10, decimal_places=2, default=600)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, default=450)
+    delivery_note = models.CharField(max_length=150, default="সারা বাংলাদেশে ক্যাশ অন ডেলিভারি!")
+    hero_cta_text = models.CharField(max_length=50, default="এখনই অর্ডার করুন")
+
+    # Features / Why Choose Us Section
+    features_title = models.CharField(max_length=200, default="কেন আমাদের মাউস ট্র্যাপ সেরা?")
+    feature_1_icon = models.CharField(max_length=50, default="fas fa-leaf", help_text="FontAwesome icon class")
+    feature_1_title = models.CharField(max_length=150, default="১০০% বিষমুক্ত ও নিরাপদ")
+    feature_1_desc = models.TextField(default="বাচ্চা বা পোষা প্রাণীর জন্য কোনো ক্ষতিকর বিষ বা রাসায়নিক ব্যবহার করা হয়নি।")
+
+    feature_2_icon = models.CharField(max_length=50, default="fas fa-sync-alt")
+    feature_2_title = models.CharField(max_length=150, default="বারবার ব্যবহারযোগ্য")
+    feature_2_desc = models.TextField(default="মজবুত প্লাস্টিক দিয়ে তৈরি, ধুয়ে বারবার ব্যবহার করা যায়। একবার কিনলেই চলবে বহুবছর।")
+
+    feature_3_icon = models.CharField(max_length=50, default="fas fa-bolt")
+    feature_3_title = models.CharField(max_length=150, default="তাত্ক্ষণিক সমাধান")
+    feature_3_desc = models.TextField(default="শক্তিশালী স্প্রিং মেকানিজমের কারণে ইঁদুর ধরা পড়ে চোখের পলকে, পালানোর কোনো সুযোগ নেই।")
+
+    feature_4_icon = models.CharField(max_length=50, default="fas fa-hand-sparkles")
+    feature_4_title = models.CharField(max_length=150, default="পরিষ্কার করা সহজ")
+    feature_4_desc = models.TextField(default="মৃত ইঁদুর হাত দিয়ে না ধরেই সহজে ফেলে দেওয়া যায়, যা অত্যন্ত স্বাস্থ্যকর।")
+
+    # Delivery charges
+    delivery_inside_dhaka = models.IntegerField(default=60)
+    delivery_outside_dhaka = models.IntegerField(default=120)
+
+    # Form & Footer
+    form_title = models.CharField(max_length=200, default="অর্ডার কনফার্ম করতে নিচের ফর্মটি পূরণ করুন")
+    submit_button_text = models.CharField(max_length=100, default="অর্ডার কনফার্ম করুন")
+    footer_helpline = models.CharField(max_length=50, blank=True, default="", help_text="Leave blank to use Site Helpline")
+    footer_email = models.CharField(max_length=100, blank=True, default="", help_text="Support email")
+    footer_copyright = models.CharField(max_length=200, blank=True, default="")
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class SinglePageBundle(models.Model):
+    single_page = models.ForeignKey(SinglePage, on_delete=models.CASCADE, related_name='bundles')
+    name = models.CharField(max_length=200, help_text="e.g. ১ পিস ম্যাজিক মাউস ট্র্যাপ")
+    price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Price for this bundle")
+    original_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Original price for strikethrough (optional)")
+    quantity = models.PositiveIntegerField(default=1)
+    is_default = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return f"{self.single_page.title} - {self.name} (৳{self.price})"
+
+
 class Order(models.Model):
     STATUS_CHOICES = (
         ('Pending', 'Pending'),
@@ -74,7 +154,9 @@ class Order(models.Model):
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
     )
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    landing_page = models.ForeignKey(SinglePage, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders')
+    package_name = models.CharField(max_length=255, blank=True, null=True)
     customer_name = models.CharField(max_length=100)
     phone_number = models.CharField(max_length=15)
     address = models.TextField()

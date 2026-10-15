@@ -28,7 +28,23 @@
             <div class="card-header bg-white"><strong>Order Summary</strong></div>
             <div class="card-body">
                 <table class="table table-borderless mb-0">
-                    <tr><th style="width:40%;">Product</th><td>{{ order.product.title|default:"—" }}</td></tr>
+                    <tr>
+                        <th style="width:40%;">Product / Package</th>
+                        <td>
+                            {% if order.product %}
+                                <div class="fw-bold">{{ order.product.title }}</div>
+                            {% endif %}
+                            {% if order.landing_page %}
+                                <div><span class="badge bg-info text-dark">Landing Page:</span> {{ order.landing_page.title }}</div>
+                            {% endif %}
+                            {% if order.package_name %}
+                                <div class="text-success fw-bold">{{ order.package_name }}</div>
+                            {% endif %}
+                            {% if not order.product and not order.landing_page and not order.package_name %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
                     <tr><th>Quantity</th><td>{{ order.quantity }}</td></tr>
                     <tr><th>Sub Total</th><td>৳ {{ order.sub_total }}</td></tr>
                     <tr><th>Delivery Charge</th><td>৳ {{ order.delivery_charge }}</td></tr>

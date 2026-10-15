@@ -1,5 +1,6 @@
 from django import forms
-from landingpage.models import Product, Category, Order, SiteSetting
+from django.forms import inlineformset_factory
+from landingpage.models import Product, Category, Order, SiteSetting, SinglePage, SinglePageBundle
 
 
 class CategoryForm(forms.ModelForm):
@@ -79,3 +80,86 @@ class SiteSettingForm(forms.ModelForm):
             'hero_subtitle': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'footer_about': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
+class SinglePageForm(forms.ModelForm):
+    class Meta:
+        model = SinglePage
+        fields = [
+            'title', 'slug', 'linked_product', 'is_active',
+            'announcement_text', 'brand_name', 'header_cta_text',
+            'hero_title', 'hero_subtitle', 'hero_image', 'video_url',
+            'regular_price', 'discount_price', 'delivery_note', 'hero_cta_text',
+            'features_title',
+            'feature_1_icon', 'feature_1_title', 'feature_1_desc',
+            'feature_2_icon', 'feature_2_title', 'feature_2_desc',
+            'feature_3_icon', 'feature_3_title', 'feature_3_desc',
+            'feature_4_icon', 'feature_4_title', 'feature_4_desc',
+            'delivery_inside_dhaka', 'delivery_outside_dhaka',
+            'form_title', 'submit_button_text',
+            'footer_helpline', 'footer_email', 'footer_copyright',
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Magic Mouse Trap'}),
+            'slug': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. magic-mouse-trap'}),
+            'linked_product': forms.Select(attrs={'class': 'form-select'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+
+            'announcement_text': forms.TextInput(attrs={'class': 'form-control'}),
+            'brand_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Leave empty for default Site Name'}),
+            'header_cta_text': forms.TextInput(attrs={'class': 'form-control'}),
+
+            'hero_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'hero_subtitle': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'hero_image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'video_url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://www.youtube.com/embed/...'}),
+
+            'regular_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'discount_price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'delivery_note': forms.TextInput(attrs={'class': 'form-control'}),
+            'hero_cta_text': forms.TextInput(attrs={'class': 'form-control'}),
+
+            'features_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'feature_1_icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-leaf'}),
+            'feature_1_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'feature_1_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+
+            'feature_2_icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-sync-alt'}),
+            'feature_2_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'feature_2_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+
+            'feature_3_icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-bolt'}),
+            'feature_3_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'feature_3_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+
+            'feature_4_icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-hand-sparkles'}),
+            'feature_4_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'feature_4_desc': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+
+            'delivery_inside_dhaka': forms.NumberInput(attrs={'class': 'form-control'}),
+            'delivery_outside_dhaka': forms.NumberInput(attrs={'class': 'form-control'}),
+
+            'form_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'submit_button_text': forms.TextInput(attrs={'class': 'form-control'}),
+
+            'footer_helpline': forms.TextInput(attrs={'class': 'form-control'}),
+            'footer_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'footer_copyright': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+
+SinglePageBundleFormSet = inlineformset_factory(
+    SinglePage,
+    SinglePageBundle,
+    fields=['name', 'price', 'original_price', 'quantity', 'is_default', 'order'],
+    extra=1,
+    can_delete=True,
+    widgets={
+        'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. ১ পিস ম্যাজিক মাউস ট্র্যাপ'}),
+        'price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '450'}),
+        'original_price': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '600 (optional)'}),
+        'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+        'is_default': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        'order': forms.NumberInput(attrs={'class': 'form-control'}),
+    }
+)

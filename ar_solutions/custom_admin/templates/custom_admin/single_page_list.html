@@ -1,0 +1,103 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Single Pages{% endblock %}
+{% block page_title %}Single Landing Pages{% endblock %}
+
+{% block content %}
+<div class="card stat-card">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <form method="get" class="d-flex" style="width:320px;">
+            <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm me-2" placeholder="Search page title / slug...">
+            <button class="btn btn-sm btn-primary"><i class="bi bi-search"></i></button>
+        </form>
+        <a href="{% url 'custom_admin:single_page_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Create Single Page</a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th style="width:70px;">Image</th>
+                        <th>Title & Link</th>
+                        <th>Linked Product</th>
+                        <th>Offer Price</th>
+                        <th>Packages</th>
+                        <th>Orders</th>
+                        <th>Status</th>
+                        <th style="width:140px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for page in pages %}
+                    <tr>
+                        <td>
+                            {% if page.hero_image %}
+                                <img src="{{ page.hero_image.url }}" width="50" height="40" style="object-fit:cover;border-radius:6px;border:1px solid #dee2e6;">
+                            {% elif page.linked_product and page.linked_product.image %}
+                                <img src="{{ page.linked_product.image.url }}" width="50" height="40" style="object-fit:cover;border-radius:6px;border:1px solid #dee2e6;">
+                            {% else %}
+                                <span class="badge bg-light text-muted border">No Img</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="d-block text-dark">{{ page.title }}</strong>
+                            <a href="/{{ page.slug }}/" target="_blank" class="text-decoration-none small text-primary">
+                                /{{ page.slug }}/ <i class="bi bi-box-arrow-up-right small"></i>
+                            </a>
+                        </td>
+                        <td>
+                            {% if page.linked_product %}
+                                <span class="badge bg-light text-dark border">{{ page.linked_product.title|truncatechars:25 }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="text-success fw-bold">৳ {{ page.discount_price|floatformat:0 }}</span>
+                            {% if page.regular_price %}
+                                <small class="text-muted text-decoration-line-through d-block">৳ {{ page.regular_price|floatformat:0 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-info text-dark">{{ page.bundles.count }} Packages</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'custom_admin:order_list' %}?q={{ page.title }}" class="badge bg-secondary text-decoration-none">
+                                {{ page.order_count }} Orders
+                            </a>
+                        </td>
+                        <td>
+                            {% if page.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="/{{ page.slug }}/" target="_blank" class="btn btn-outline-info" title="Preview Live Page">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'custom_admin:single_page_edit' page.pk %}" class="btn btn-warning" title="Edit Page">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'custom_admin:single_page_delete' page.pk %}" class="btn btn-danger" title="Delete Page">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-5">
+                            <i class="bi bi-file-earmark-richtext display-6 d-block mb-2 text-secondary"></i>
+                            No single landing pages found.<br>
+                            <a href="{% url 'custom_admin:single_page_create' %}" class="btn btn-sm btn-primary mt-2">Create your first Single Page</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -81,7 +81,20 @@
                 <td>Price</td>
             </tr>
             <tr class="item">
-                <td>{{ order.product.title }} (Quantity: {{ order.quantity }})</td>
+                <td>
+                    {% if order.product %}
+                        {{ order.product.title }}
+                        {% if order.package_name %}<br><small class="text-muted">({{ order.package_name }})</small>{% endif %}
+                    {% elif order.landing_page %}
+                        {{ order.landing_page.title }}
+                        {% if order.package_name %}<br><small class="text-muted">({{ order.package_name }})</small>{% endif %}
+                    {% elif order.package_name %}
+                        {{ order.package_name }}
+                    {% else %}
+                        Item
+                    {% endif %}
+                    (Quantity: {{ order.quantity }})
+                </td>
                 <td>৳ {{ order.sub_total }}</td>
             </tr>
             <tr class="item">

@@ -1,0 +1,387 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.errors or formset.errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Please correct the errors below:</strong>
+                    {{ form.errors }}
+                    {{ formset.errors }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+
+            <!-- Top Action Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a href="{% url 'custom_admin:single_page_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+                <div class="d-flex gap-2">
+                    {% if single_page %}
+                        <a href="/{{ single_page.slug }}/" target="_blank" class="btn btn-outline-info">
+                            <i class="bi bi-eye"></i> View Live Page
+                        </a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check2-circle"></i> Save Single Page
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab Navigation -->
+            <ul class="nav nav-pills mb-3 bg-white p-2 rounded shadow-sm" id="pageTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="general-tab" data-bs-toggle="pill" data-bs-target="#general" type="button" role="tab">
+                        <i class="bi bi-info-circle me-1"></i> 1. General & Header
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="hero-tab" data-bs-toggle="pill" data-bs-target="#hero" type="button" role="tab">
+                        <i class="bi bi-image me-1"></i> 2. Hero Section
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="features-tab" data-bs-toggle="pill" data-bs-target="#features" type="button" role="tab">
+                        <i class="bi bi-stars me-1"></i> 3. Features & Benefits
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="bundles-tab" data-bs-toggle="pill" data-bs-target="#bundles" type="button" role="tab">
+                        <i class="bi bi-box-seam me-1"></i> 4. Packages / Bundles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="checkout-tab" data-bs-toggle="pill" data-bs-target="#checkout" type="button" role="tab">
+                        <i class="bi bi-cart-check me-1"></i> 5. Delivery & Checkout
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pageTabContent">
+                
+                <!-- 1. General & Header -->
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Basic Page Settings</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Page Title / Product Name <span class="text-danger">*</span></label>
+                                    {{ form.title }}
+                                    <small class="text-muted">Main page headline and browser tab title.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">URL Slug <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text text-muted">/</span>
+                                        {{ form.slug }}
+                                    </div>
+                                    <small class="text-muted">Unique page link (e.g. <code>magic-mouse-trap</code>).</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Link to Inventory Product (Optional)</label>
+                                    {{ form.linked_product }}
+                                    <small class="text-muted">Optional: connects this landing page to a store product.</small>
+                                </div>
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <div class="form-check form-switch mt-3">
+                                        {{ form.is_active }}
+                                        <label class="form-check-label fw-bold ms-2" for="{{ form.is_active.id_for_label }}">Active & Published</label>
+                                        <div class="text-muted small">Turn off to temporarily hide this page from public view.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Top Bar & Header Branding</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Top Announcement Bar Text</label>
+                                    {{ form.announcement_text }}
+                                    <small class="text-muted">Displayed in the top dark announcement banner.</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Brand Name Override</label>
+                                    {{ form.brand_name }}
+                                    <small class="text-muted">Leave empty to use main Site Name (AR SOLUTIONS BD).</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Header CTA Button Text</label>
+                                    {{ form.header_cta_text }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Hero Section -->
+                <div class="tab-pane fade" id="hero" role="tabpanel">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Hero Section (Main Attraction)</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Hero Headline Title <span class="text-danger">*</span></label>
+                                    {{ form.hero_title }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Hero Subtitle</label>
+                                    {{ form.hero_subtitle }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Hero / Product Main Image</label>
+                                    {{ form.hero_image }}
+                                    {% if single_page and single_page.hero_image %}
+                                        <div class="mt-2">
+                                            <img src="{{ single_page.hero_image.url }}" alt="Preview" class="img-thumbnail" style="max-height: 120px;">
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">YouTube Video Embed URL (Optional)</label>
+                                    {{ form.video_url }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Pricing & CTA Highlight Box</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Regular Price (৳)</label>
+                                    {{ form.regular_price }}
+                                    <small class="text-muted">Original price shown with strikethrough.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Offer / Starting Price (৳) <span class="text-danger">*</span></label>
+                                    {{ form.discount_price }}
+                                    <small class="text-muted">Featured big discount price.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Hero CTA Button Text</label>
+                                    {{ form.hero_cta_text }}
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold">Delivery Notice Badge</label>
+                                    {{ form.delivery_note }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Features & Benefits -->
+                <div class="tab-pane fade" id="features" role="tabpanel">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>"Why Choose Us" / 4 Key Features</strong></div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Section Heading Title</label>
+                                {{ form.features_title }}
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- Feature 1 -->
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 bg-light h-100">
+                                        <span class="badge bg-success mb-2">Feature 1</span>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Icon Class (FontAwesome)</label>
+                                            {{ form.feature_1_icon }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Title</label>
+                                            {{ form.feature_1_title }}
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold">Description</label>
+                                            {{ form.feature_1_desc }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Feature 2 -->
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 bg-light h-100">
+                                        <span class="badge bg-primary mb-2">Feature 2</span>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Icon Class</label>
+                                            {{ form.feature_2_icon }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Title</label>
+                                            {{ form.feature_2_title }}
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold">Description</label>
+                                            {{ form.feature_2_desc }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Feature 3 -->
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 bg-light h-100">
+                                        <span class="badge bg-warning text-dark mb-2">Feature 3</span>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Icon Class</label>
+                                            {{ form.feature_3_icon }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Title</label>
+                                            {{ form.feature_3_title }}
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold">Description</label>
+                                            {{ form.feature_3_desc }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Feature 4 -->
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3 bg-light h-100">
+                                        <span class="badge bg-info text-dark mb-2">Feature 4</span>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Icon Class</label>
+                                            {{ form.feature_4_icon }}
+                                        </div>
+                                        <div class="mb-2">
+                                            <label class="form-label small fw-bold">Title</label>
+                                            {{ form.feature_4_title }}
+                                        </div>
+                                        <div>
+                                            <label class="form-label small fw-bold">Description</label>
+                                            {{ form.feature_4_desc }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Packages / Bundles -->
+                <div class="tab-pane fade" id="bundles" role="tabpanel">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Package / Bundle Pricing Options</strong>
+                                <small class="text-muted d-block">Customers will select one of these packages on checkout with real-time price update.</small>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            {{ formset.management_form }}
+                            <div class="table-responsive">
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Package Name <span class="text-danger">*</span></th>
+                                            <th style="width:130px;">Price (৳) <span class="text-danger">*</span></th>
+                                            <th style="width:140px;">Old Price (৳)</th>
+                                            <th style="width:90px;">Qty</th>
+                                            <th style="width:80px;">Default?</th>
+                                            <th style="width:70px;">Order</th>
+                                            <th style="width:70px;">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bundle_form in formset %}
+                                            <tr>
+                                                <td>
+                                                    {{ bundle_form.id }}
+                                                    {{ bundle_form.name }}
+                                                    {% if bundle_form.name.errors %}<div class="text-danger small">{{ bundle_form.name.errors }}</div>{% endif %}
+                                                </td>
+                                                <td>
+                                                    {{ bundle_form.price }}
+                                                    {% if bundle_form.price.errors %}<div class="text-danger small">{{ bundle_form.price.errors }}</div>{% endif %}
+                                                </td>
+                                                <td>{{ bundle_form.original_price }}</td>
+                                                <td>{{ bundle_form.quantity }}</td>
+                                                <td class="text-center">{{ bundle_form.is_default }}</td>
+                                                <td>{{ bundle_form.order }}</td>
+                                                <td class="text-center">
+                                                    {% if bundle_form.instance.pk %}
+                                                        {{ bundle_form.DELETE }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Delivery & Checkout -->
+                <div class="tab-pane fade" id="checkout" role="tabpanel">
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Delivery Fees & Form Settings</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Delivery Charge - Inside Dhaka (৳)</label>
+                                    {{ form.delivery_inside_dhaka }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Delivery Charge - Outside Dhaka (৳)</label>
+                                    {{ form.delivery_outside_dhaka }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Order Form Section Title</label>
+                                    {{ form.form_title }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Order Button Text</label>
+                                    {{ form.submit_button_text }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card stat-card mb-4">
+                        <div class="card-header bg-white"><strong>Footer & Contact Settings</strong></div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Helpline Number</label>
+                                    {{ form.footer_helpline }}
+                                    <small class="text-muted">Leave empty to use main site helpline.</small>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Support Email</label>
+                                    {{ form.footer_email }}
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-bold">Copyright Text</label>
+                                    {{ form.footer_copyright }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Sticky Save Bar -->
+            <div class="bg-white p-3 rounded shadow-sm d-flex justify-content-between align-items-center mt-3">
+                <a href="{% url 'custom_admin:single_page_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary px-5 py-2">
+                    <i class="bi bi-check2-circle"></i> Save Single Page
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+{% endblock %}

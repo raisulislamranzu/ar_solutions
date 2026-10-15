@@ -24,6 +24,12 @@ urlpatterns = [
     path('categories/<int:pk>/edit/', views.category_edit, name='category_edit'),
     path('categories/<int:pk>/delete/', views.category_delete, name='category_delete'),
 
+    # Single Pages (Landing Pages) CRUD
+    path('single-pages/', views.single_page_list, name='single_page_list'),
+    path('single-pages/create/', views.single_page_create, name='single_page_create'),
+    path('single-pages/<int:pk>/edit/', views.single_page_edit, name='single_page_edit'),
+    path('single-pages/<int:pk>/delete/', views.single_page_delete, name='single_page_delete'),
+
     # Orders
     path('orders/', views.order_list, name='order_list'),
     path('orders/<int:pk>/', views.order_detail, name='order_detail'),
