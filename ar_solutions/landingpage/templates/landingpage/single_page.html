@@ -36,54 +36,27 @@
             }
         }
     </script>
-    <style>
-        body {
-            font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
-            background-color: #F8FAFC;
-        }
-        .text-shadow-sm {
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.25);
-        }
-        .pulse-btn {
-            animation: pulse-ring 2s infinite cubic-bezier(.66, 0, 0, 1);
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 162, 100, 0.7); }
-            70% { transform: scale(1.03); box-shadow: 0 0 0 14px rgba(37, 162, 100, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 162, 100, 0); }
-        }
-        .sticky-bottom-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 50;
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'landingpage/css/style.css' %}">
 </head>
 <body class="antialiased text-slate-800 pb-24 md:pb-0 font-bn">
 
     <!-- Top Announcement Bar -->
-    <div class="bg-brand-tealDark text-emerald-300 text-center py-2.5 px-4 text-xs sm:text-sm font-semibold tracking-wide border-b border-white/10 flex items-center justify-center gap-2">
+    <div class="bg-brand-tealDark text-emerald-300 text-center py-2 px-4 text-xs sm:text-sm font-semibold tracking-wide border-b border-white/10 flex items-center justify-center gap-2">
         <span>{{ page.announcement_text }}</span>
     </div>
 
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-slate-100">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center max-w-4xl">
-            <a href="/" class="flex items-center gap-2 text-decoration-none">
+            <a href="/" class="flex items-center gap-2.5 text-decoration-none">
                 {% if site and site.logo %}
                     <img src="{{ site.logo.url }}" alt="{{ site.site_name }}" class="h-9 w-auto object-contain">
                 {% else %}
-                    <div class="w-9 h-9 rounded-lg bg-brand-teal flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div class="w-9 h-9 rounded-xl bg-brand-teal flex items-center justify-center text-white font-bold text-lg shadow-sm">
                         <i class="fa-solid fa-cube text-brand-green"></i>
                     </div>
                 {% endif %}
-                <span class="text-xl sm:text-2xl font-bold text-brand-teal font-sans">
+                <span class="text-xl sm:text-2xl font-bold text-brand-teal font-sans tracking-tight">
                     {% if page.brand_name %}
                         {{ page.brand_name }}
                     {% elif site %}
@@ -113,17 +86,60 @@
             {{ page.hero_title }}
         </h1>
         {% if page.hero_subtitle %}
-            <p class="text-base sm:text-lg md:text-xl text-slate-600 mb-6 font-medium max-w-2xl mx-auto">
+            <p class="text-base sm:text-lg md:text-xl text-slate-600 mb-6 font-medium max-w-2xl mx-auto leading-relaxed">
                 {{ page.hero_subtitle }}
             </p>
         {% endif %}
 
-        <!-- Product Image or Video -->
-        <div class="bg-white p-3 sm:p-4 rounded-2xl shadow-lg border border-slate-200/80 mb-8 max-w-2xl mx-auto overflow-hidden">
-            {% if page.hero_image %}
-                <img src="{{ page.hero_image.url }}" alt="{{ page.title }}" class="w-full rounded-xl object-contain max-h-[420px] mx-auto transition-transform hover:scale-[1.01] duration-300">
-            {% elif page.linked_product and page.linked_product.image %}
-                <img src="{{ page.linked_product.image.url }}" alt="{{ page.title }}" class="w-full rounded-xl object-contain max-h-[420px] mx-auto">
+        <!-- Product Image / Multiple Gallery Slider -->
+        <div id="heroGalleryBox" 
+             data-autoscroll="{{ page.auto_scroll_images|yesno:'true,false' }}" 
+             data-interval="{{ page.auto_scroll_interval|default:3 }}"
+             class="bg-white p-3 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200/80 mb-8 max-w-2xl mx-auto overflow-hidden">
+            {% if page.all_images %}
+                <div class="relative group h-64 sm:h-96 md:h-[420px] w-full rounded-2xl bg-slate-50/50 flex items-center justify-center overflow-hidden">
+                    <img id="mainProductImage" 
+                         src="{{ page.all_images.0 }}" 
+                         alt="{{ page.title }}" 
+                         class="max-h-full max-w-full object-contain mx-auto transition-opacity duration-300">
+                    
+                    {% if page.all_images|length > 1 %}
+                        <!-- Prev / Next navigation buttons -->
+                        <button type="button" 
+                                onclick="navigateGallery(-1); startAutoScroll();" 
+                                aria-label="Previous Image"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-brand-teal shadow-md flex items-center justify-center opacity-85 sm:opacity-0 group-hover:opacity-100 transition hover:scale-105">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </button>
+                        <button type="button" 
+                                onclick="navigateGallery(1); startAutoScroll();" 
+                                aria-label="Next Image"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-brand-teal shadow-md flex items-center justify-center opacity-85 sm:opacity-0 group-hover:opacity-100 transition hover:scale-105">
+                            <i class="fa-solid fa-chevron-right text-sm"></i>
+                        </button>
+
+                        <!-- Dot indicators on bottom of main image -->
+                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/30 backdrop-blur-sm">
+                            {% for img in page.all_images %}
+                                <span class="gallery-dot w-2 h-2 rounded-full transition-all {% if forloop.first %}bg-brand-green w-4{% else %}bg-white/70{% endif %}"></span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Thumbnails (only shown if multiple images exist) -->
+                {% if page.all_images|length > 1 %}
+                    <div class="flex items-center justify-center gap-2 sm:gap-3 mt-4 px-2 overflow-x-auto pb-1 thumb-scroll" id="galleryThumbnails">
+                        {% for img_url in page.all_images %}
+                            <button type="button" 
+                                    onclick="switchMainImage('{{ img_url }}', this, {{ forloop.counter0 }})" 
+                                    data-index="{{ forloop.counter0 }}"
+                                    class="gallery-thumb relative rounded-xl overflow-hidden w-16 h-16 sm:w-20 sm:h-20 border-2 transition-all shrink-0 bg-slate-50 {% if forloop.first %}border-brand-green ring-2 ring-brand-green/30 scale-105 shadow-sm{% else %}border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300{% endif %}">
+                                <img src="{{ img_url }}" alt="Thumbnail {{ forloop.counter }}" class="w-full h-full object-cover">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             {% else %}
                 <div class="w-full h-72 sm:h-96 bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-400">
                     <i class="fa-regular fa-image text-5xl mb-2"></i>
@@ -133,39 +149,57 @@
         </div>
 
         <!-- Pricing & CTA Highlight Card -->
-        <div class="bg-gradient-to-br from-emerald-50 via-teal-50/50 to-white border-2 border-brand-green/40 rounded-2xl p-6 sm:p-8 mb-10 max-w-2xl mx-auto shadow-md relative overflow-hidden">
+        <div class="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-white border-2 border-brand-green/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-10 max-w-2xl mx-auto shadow-md relative overflow-hidden">
             <div class="flex justify-center items-center gap-4 sm:gap-6 mb-4 flex-wrap">
                 {% if page.regular_price %}
                     <div class="text-slate-400 text-lg sm:text-2xl line-through font-semibold">
                         মূল্য: ৳{{ page.regular_price|floatformat:0 }}
                     </div>
                 {% endif %}
-                <div class="text-brand-green text-3xl sm:text-4xl font-extrabold text-shadow-sm flex items-center gap-1">
+                <div class="text-brand-green text-3xl sm:text-4xl font-extrabold text-shadow-sm flex items-center gap-1.5">
                     <span>অফার মূল্য:</span> <span>৳{{ page.discount_price|floatformat:0 }}</span>
                 </div>
             </div>
 
             {% if page.delivery_note %}
-                <div class="inline-flex items-center gap-2 bg-white/80 border border-brand-green/30 px-4 py-1.5 rounded-full text-brand-teal font-bold mb-6 text-sm sm:text-base shadow-sm">
+                <div class="inline-flex items-center gap-2 bg-white/90 border border-brand-green/30 px-4 py-1.5 rounded-full text-brand-teal font-bold mb-6 text-sm sm:text-base shadow-sm">
                     <i class="fa-solid fa-truck-fast text-brand-green"></i> {{ page.delivery_note }}
                 </div>
             {% endif %}
 
-            <a href="#order-form" class="pulse-btn block w-full bg-brand-green hover:bg-brand-greenHover text-white text-xl sm:text-2xl font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-3">
+            <a href="#order-form" class="pulse-btn block w-full bg-brand-green hover:bg-brand-greenHover text-white text-xl sm:text-2xl font-bold py-4 rounded-2xl shadow-lg transition flex justify-center items-center gap-3">
                 <i class="fa-solid fa-cart-shopping"></i> {{ page.hero_cta_text|default:"এখনই অর্ডার করুন" }}
             </a>
-            <div class="mt-3 flex justify-center items-center gap-6 text-xs sm:text-sm text-slate-500">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-brand-green"></i> ১০০% অরিজিনাল পণ্য</span>
+            <div class="mt-4 flex justify-center items-center gap-6 text-xs sm:text-sm text-slate-600 flex-wrap">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-green"></i> ১০০% অরিজিনাল পণ্য</span>
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand-holding-dollar text-brand-green"></i> ক্যাশ অন ডেলিভারি</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-brand-green"></i> দ্রুত ডেলিভারি</span>
             </div>
         </div>
     </section>
+
+    <!-- Video Demonstration (If YouTube Video is provided) -->
+    {% if page.embed_video_url %}
+    <section class="container mx-auto px-4 py-8 max-w-4xl text-center">
+        <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 max-w-3xl mx-auto">
+            <div class="inline-flex items-center gap-2 bg-emerald-50 border border-brand-green/30 text-brand-teal text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider mb-3">
+                <i class="fa-brands fa-youtube text-red-600 text-sm"></i> ভিডিও রিভিউ & ডেমো
+            </div>
+            <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-teal mb-4">
+                ভিডিওতে দেখুন প্রোডাক্টটি কীভাবে ব্যবহার করবেন
+            </h2>
+            <div class="aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-md bg-black">
+                <iframe src="{{ page.embed_video_url }}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+    {% endif %}
 
     <!-- Why Choose Us / Features -->
     <section class="bg-white py-12 sm:py-16 border-t border-b border-slate-200">
         <div class="container mx-auto px-4 max-w-4xl">
             <div class="text-center mb-10">
-                <span class="text-brand-green bg-brand-greenLight font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Features</span>
+                <span class="text-brand-green bg-brand-greenLight font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">Features & Benefits</span>
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-teal mt-2">
                     {{ page.features_title }}
                 </h2>
@@ -173,9 +207,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 <!-- Feature 1 -->
-                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div class="w-12 h-12 rounded-xl bg-brand-greenLight text-brand-green flex items-center justify-center text-xl shrink-0 shadow-sm">
-                        <i class="{{ page.feature_1_icon|default:'fas fa-leaf' }}"></i>
+                        <i class="{{ page.feature_1_icon|default:'fa-solid fa-leaf' }}"></i>
                     </div>
                     <div>
                         <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_1_title }}</h3>
@@ -183,9 +217,9 @@
                     </div>
                 </div>
                 <!-- Feature 2 -->
-                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
-                        <i class="{{ page.feature_2_icon|default:'fas fa-sync-alt' }}"></i>
+                        <i class="{{ page.feature_2_icon|default:'fa-solid fa-arrows-rotate' }}"></i>
                     </div>
                     <div>
                         <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_2_title }}</h3>
@@ -193,9 +227,9 @@
                     </div>
                 </div>
                 <!-- Feature 3 -->
-                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
-                        <i class="{{ page.feature_3_icon|default:'fas fa-bolt' }}"></i>
+                        <i class="{{ page.feature_3_icon|default:'fa-solid fa-bolt' }}"></i>
                     </div>
                     <div>
                         <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_3_title }}</h3>
@@ -203,9 +237,9 @@
                     </div>
                 </div>
                 <!-- Feature 4 -->
-                <div class="flex items-start gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
-                        <i class="{{ page.feature_4_icon|default:'fas fa-hand-sparkles' }}"></i>
+                        <i class="{{ page.feature_4_icon|default:'fa-solid fa-hand-sparkles' }}"></i>
                     </div>
                     <div>
                         <h3 class="font-bold text-lg sm:text-xl text-brand-teal mb-1">{{ page.feature_4_title }}</h3>
@@ -474,67 +508,7 @@
         </a>
     </div>
 
-    <!-- JavaScript for Dynamic Calculation and UI -->
-    <script>
-        function calculateTotal() {
-            // Find selected bundle
-            const bundleRadios = document.querySelectorAll('input[name="bundle_id"]');
-            let bundlePrice = 0;
-            let bundleName = "";
-
-            bundleRadios.forEach(radio => {
-                const dot = radio.closest('label').querySelector('.radio-dot');
-                if (radio.checked) {
-                    bundlePrice = parseFloat(radio.getAttribute('data-price') || 0);
-                    bundleName = radio.getAttribute('data-name') || "";
-                    if (dot) dot.classList.remove('hidden');
-                } else {
-                    if (dot) dot.classList.add('hidden');
-                }
-            });
-
-            // If no radio found (or default fallback)
-            if (bundlePrice === 0 && bundleRadios.length > 0) {
-                bundlePrice = parseFloat(bundleRadios[0].getAttribute('data-price') || 0);
-                bundleName = bundleRadios[0].getAttribute('data-name') || "";
-            }
-
-            // Find selected delivery area
-            const deliveryRadios = document.querySelectorAll('input[name="delivery_area"]');
-            let deliveryCharge = {{ page.delivery_inside_dhaka|default:60 }};
-
-            deliveryRadios.forEach(radio => {
-                if (radio.checked) {
-                    deliveryCharge = parseFloat(radio.getAttribute('data-charge') || 0);
-                }
-            });
-
-            const total = bundlePrice + deliveryCharge;
-
-            // Update summary UI
-            document.getElementById('bundleNameDisplay').innerText = bundleName;
-            document.getElementById('bundlePriceDisplay').innerText = '৳ ' + Math.round(bundlePrice);
-            document.getElementById('deliveryChargeDisplay').innerText = '৳ ' + Math.round(deliveryCharge);
-            document.getElementById('totalPriceDisplay').innerText = '৳ ' + Math.round(total);
-        }
-
-        // Initialize calculation on DOM ready
-        document.addEventListener('DOMContentLoaded', function() {
-            calculateTotal();
-            
-            // Handle form submission UX
-            const form = document.getElementById('checkoutForm');
-            if (form) {
-                form.addEventListener('submit', function() {
-                    const btn = document.getElementById('submitBtn');
-                    if (btn) {
-                        btn.disabled = true;
-                        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> প্রসেসিং হচ্ছে...';
-                        btn.classList.add('opacity-75', 'cursor-not-allowed');
-                    }
-                });
-            }
-        });
-    </script>
+    <!-- Static JavaScript file containing all interactive features -->
+    <script src="{% static 'landingpage/js/main.js' %}"></script>
 </body>
 </html>
