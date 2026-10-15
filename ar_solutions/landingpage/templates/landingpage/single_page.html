@@ -39,6 +39,7 @@
             }
         }
     </script>
+<<<<<<< HEAD
     <style>
         body {
             font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
@@ -131,13 +132,20 @@
             box-shadow: 0 1px 3px 0 rgba(16, 185, 129, 0.15) !important;
         }
     </style>
+=======
+    <link rel="stylesheet" href="{% static 'landingpage/css/style.css' %}">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
 </head>
 
 <body class="antialiased text-slate-800 pb-24 md:pb-0 font-bn">
 
     <!-- Top Announcement Bar -->
+<<<<<<< HEAD
     <div
         class="bg-brand-tealDark text-emerald-300 text-center py-2 px-4 text-xs sm:text-sm font-semibold tracking-wide border-b border-white/10 flex items-center justify-center gap-2">
+=======
+    <div class="bg-brand-tealDark text-emerald-300 text-center py-2 px-4 text-xs sm:text-sm font-semibold tracking-wide border-b border-white/10 flex items-center justify-center gap-2">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
         <span>{{ page.announcement_text }}</span>
     </div>
 
@@ -148,10 +156,16 @@
                 {% if site and site.logo %}
                 <img src="{{ site.logo.url }}" alt="{{ site.site_name }}" class="h-9 w-auto object-contain">
                 {% else %}
+<<<<<<< HEAD
                 <div
                     class="w-9 h-9 rounded-xl bg-brand-teal flex items-center justify-center text-white font-bold text-lg shadow-sm">
                     <i class="fa-solid fa-cube text-brand-green"></i>
                 </div>
+=======
+                    <div class="w-9 h-9 rounded-xl bg-brand-teal flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        <i class="fa-solid fa-cube text-brand-green"></i>
+                    </div>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                 {% endif %}
                 <span class="text-xl sm:text-2xl font-bold text-brand-teal font-sans tracking-tight">
                     {% if page.brand_name %}
@@ -165,6 +179,7 @@
             </a>
             <div class="flex items-center gap-3">
                 {% if page.footer_helpline or site.helpline %}
+<<<<<<< HEAD
                 <a href="tel:{{ page.footer_helpline|default:site.helpline }}"
                     class="hidden sm:inline-flex items-center gap-1.5 text-xs text-brand-teal font-semibold hover:text-brand-green transition bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
                     <i class="fa-solid fa-phone text-brand-green"></i> {{ page.footer_helpline|default:site.helpline }}
@@ -172,6 +187,13 @@
                 {% endif %}
                 <a href="#order-form"
                     class="bg-brand-green hover:bg-brand-greenHover text-white px-4 sm:px-6 py-2 rounded-xl font-bold text-sm transition shadow-sm flex items-center gap-2">
+=======
+                    <a href="tel:{{ page.footer_helpline|default:site.helpline }}" class="hidden sm:inline-flex items-center gap-1.5 text-xs text-brand-teal font-semibold hover:text-brand-green transition bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+                        <i class="fa-solid fa-phone text-brand-green"></i> {{ page.footer_helpline|default:site.helpline }}
+                    </a>
+                {% endif %}
+                <a href="#order-form" class="bg-brand-green hover:bg-brand-greenHover text-white px-4 sm:px-6 py-2 rounded-xl font-bold text-sm transition shadow-sm flex items-center gap-2">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                     <i class="fa-solid fa-cart-shopping text-xs"></i> {{ page.header_cta_text|default:"অর্ডার করুন" }}
                 </a>
             </div>
@@ -185,6 +207,7 @@
             {{ page.hero_title }}
         </h1>
         {% if page.hero_subtitle %}
+<<<<<<< HEAD
         <p class="text-base sm:text-lg md:text-xl text-slate-600 mb-6 font-medium max-w-2xl mx-auto leading-relaxed">
             {{ page.hero_subtitle }}
         </p>
@@ -218,6 +241,66 @@
                     <span
                         class="gallery-dot w-2 h-2 rounded-full transition-all {% if forloop.first %}bg-brand-green w-4{% else %}bg-white/70{% endif %}"></span>
                     {% endfor %}
+=======
+            <p class="text-base sm:text-lg md:text-xl text-slate-600 mb-6 font-medium max-w-2xl mx-auto leading-relaxed">
+                {{ page.hero_subtitle }}
+            </p>
+        {% endif %}
+
+        <!-- Product Image / Multiple Gallery Slider -->
+        <div id="heroGalleryBox" 
+             data-autoscroll="{{ page.auto_scroll_images|yesno:'true,false' }}" 
+             data-interval="{{ page.auto_scroll_interval|default:3 }}"
+             class="bg-white p-3 sm:p-5 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200/80 mb-8 max-w-2xl mx-auto overflow-hidden">
+            {% if page.all_images %}
+                <div class="relative group h-64 sm:h-96 md:h-[420px] w-full rounded-2xl bg-slate-50/50 flex items-center justify-center overflow-hidden">
+                    <img id="mainProductImage" 
+                         src="{{ page.all_images.0 }}" 
+                         alt="{{ page.title }}" 
+                         class="max-h-full max-w-full object-contain mx-auto transition-opacity duration-300">
+                    
+                    {% if page.all_images|length > 1 %}
+                        <!-- Prev / Next navigation buttons -->
+                        <button type="button" 
+                                onclick="navigateGallery(-1); startAutoScroll();" 
+                                aria-label="Previous Image"
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-brand-teal shadow-md flex items-center justify-center opacity-85 sm:opacity-0 group-hover:opacity-100 transition hover:scale-105">
+                            <i class="fa-solid fa-chevron-left text-sm"></i>
+                        </button>
+                        <button type="button" 
+                                onclick="navigateGallery(1); startAutoScroll();" 
+                                aria-label="Next Image"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-brand-teal shadow-md flex items-center justify-center opacity-85 sm:opacity-0 group-hover:opacity-100 transition hover:scale-105">
+                            <i class="fa-solid fa-chevron-right text-sm"></i>
+                        </button>
+
+                        <!-- Dot indicators on bottom of main image -->
+                        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/30 backdrop-blur-sm">
+                            {% for img in page.all_images %}
+                                <span class="gallery-dot w-2 h-2 rounded-full transition-all {% if forloop.first %}bg-brand-green w-4{% else %}bg-white/70{% endif %}"></span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Gallery Thumbnails (only shown if multiple images exist) -->
+                {% if page.all_images|length > 1 %}
+                    <div class="flex items-center justify-center gap-2 sm:gap-3 mt-4 px-2 overflow-x-auto pb-1 thumb-scroll" id="galleryThumbnails">
+                        {% for img_url in page.all_images %}
+                            <button type="button" 
+                                    onclick="switchMainImage('{{ img_url }}', this, {{ forloop.counter0 }})" 
+                                    data-index="{{ forloop.counter0 }}"
+                                    class="gallery-thumb relative rounded-xl overflow-hidden w-16 h-16 sm:w-20 sm:h-20 border-2 transition-all shrink-0 bg-slate-50 {% if forloop.first %}border-brand-green ring-2 ring-brand-green/30 scale-105 shadow-sm{% else %}border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300{% endif %}">
+                                <img src="{{ img_url }}" alt="Thumbnail {{ forloop.counter }}" class="w-full h-full object-cover">
+                            </button>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="w-full h-72 sm:h-96 bg-slate-100 rounded-xl flex flex-col items-center justify-center text-slate-400">
+                    <i class="fa-regular fa-image text-5xl mb-2"></i>
+                    <span class="text-sm">Product Image</span>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                 </div>
                 {% endif %}
             </div>
@@ -245,21 +328,30 @@
         </div>
 
         <!-- Pricing & CTA Highlight Card -->
+<<<<<<< HEAD
         <div
             class="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-white border-2 border-brand-green/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-10 max-w-2xl mx-auto shadow-md relative overflow-hidden">
+=======
+        <div class="bg-gradient-to-br from-emerald-50 via-teal-50/40 to-white border-2 border-brand-green/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-10 max-w-2xl mx-auto shadow-md relative overflow-hidden">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
             <div class="flex justify-center items-center gap-4 sm:gap-6 mb-4 flex-wrap">
                 {% if page.regular_price %}
                 <div class="text-slate-400 text-lg sm:text-2xl line-through font-semibold">
                     মূল্য: ৳{{ page.regular_price|floatformat:0 }}
                 </div>
                 {% endif %}
+<<<<<<< HEAD
                 <div
                     class="text-brand-green text-3xl sm:text-4xl font-extrabold text-shadow-sm flex items-center gap-1.5">
+=======
+                <div class="text-brand-green text-3xl sm:text-4xl font-extrabold text-shadow-sm flex items-center gap-1.5">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                     <span>অফার মূল্য:</span> <span>৳{{ page.discount_price|floatformat:0 }}</span>
                 </div>
             </div>
 
             {% if page.delivery_note %}
+<<<<<<< HEAD
             <div
                 class="inline-flex items-center gap-2 bg-white/90 border border-brand-green/30 px-4 py-1.5 rounded-full text-brand-teal font-bold mb-6 text-sm sm:text-base shadow-sm">
                 <i class="fa-solid fa-truck-fast text-brand-green"></i> {{ page.delivery_note }}
@@ -277,6 +369,20 @@
                     ক্যাশ অন ডেলিভারি</span>
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-brand-green"></i> দ্রুত
                     ডেলিভারি</span>
+=======
+                <div class="inline-flex items-center gap-2 bg-white/90 border border-brand-green/30 px-4 py-1.5 rounded-full text-brand-teal font-bold mb-6 text-sm sm:text-base shadow-sm">
+                    <i class="fa-solid fa-truck-fast text-brand-green"></i> {{ page.delivery_note }}
+                </div>
+            {% endif %}
+
+            <a href="#order-form" class="pulse-btn block w-full bg-brand-green hover:bg-brand-greenHover text-white text-xl sm:text-2xl font-bold py-4 rounded-2xl shadow-lg transition flex justify-center items-center gap-3">
+                <i class="fa-solid fa-cart-shopping"></i> {{ page.hero_cta_text|default:"এখনই অর্ডার করুন" }}
+            </a>
+            <div class="mt-4 flex justify-center items-center gap-6 text-xs sm:text-sm text-slate-600 flex-wrap">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-green"></i> ১০০% অরিজিনাল পণ্য</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-hand-holding-dollar text-brand-green"></i> ক্যাশ অন ডেলিভারি</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-rotate-left text-brand-green"></i> দ্রুত ডেলিভারি</span>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
             </div>
         </div>
     </section>
@@ -285,17 +391,25 @@
     {% if page.embed_video_url %}
     <section class="container mx-auto px-4 py-8 max-w-4xl text-center">
         <div class="bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 max-w-3xl mx-auto">
+<<<<<<< HEAD
             <div
                 class="inline-flex items-center gap-2 bg-emerald-50 border border-brand-green/30 text-brand-teal text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider mb-3">
+=======
+            <div class="inline-flex items-center gap-2 bg-emerald-50 border border-brand-green/30 text-brand-teal text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider mb-3">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                 <i class="fa-brands fa-youtube text-red-600 text-sm"></i> ভিডিও রিভিউ & ডেমো
             </div>
             <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-teal mb-4">
                 ভিডিওতে দেখুন প্রোডাক্টটি কীভাবে ব্যবহার করবেন
             </h2>
             <div class="aspect-video rounded-xl sm:rounded-2xl overflow-hidden shadow-md bg-black">
+<<<<<<< HEAD
                 <iframe src="{{ page.embed_video_url }}" class="w-full h-full" frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>
+=======
+                <iframe src="{{ page.embed_video_url }}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
             </div>
         </div>
     </section>
@@ -305,9 +419,13 @@
     <section class="bg-white py-12 sm:py-16 border-t border-b border-slate-200">
         <div class="container mx-auto px-4 max-w-4xl">
             <div class="text-center mb-10">
+<<<<<<< HEAD
                 <span
                     class="text-brand-green bg-brand-greenLight font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">Features
                     & Benefits</span>
+=======
+                <span class="text-brand-green bg-brand-greenLight font-bold text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">Features & Benefits</span>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-brand-teal mt-2">
                     {{ page.features_title }}
                 </h2>
@@ -315,10 +433,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
                 <!-- Feature 1 -->
+<<<<<<< HEAD
                 <div
                     class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div
                         class="w-12 h-12 rounded-xl bg-brand-greenLight text-brand-green flex items-center justify-center text-xl shrink-0 shadow-sm">
+=======
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-brand-greenLight text-brand-green flex items-center justify-center text-xl shrink-0 shadow-sm">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                         <i class="{{ page.feature_1_icon|default:'fa-solid fa-leaf' }}"></i>
                     </div>
                     <div>
@@ -327,10 +450,15 @@
                     </div>
                 </div>
                 <!-- Feature 2 -->
+<<<<<<< HEAD
                 <div
                     class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div
                         class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+=======
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                         <i class="{{ page.feature_2_icon|default:'fa-solid fa-arrows-rotate' }}"></i>
                     </div>
                     <div>
@@ -339,10 +467,15 @@
                     </div>
                 </div>
                 <!-- Feature 3 -->
+<<<<<<< HEAD
                 <div
                     class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div
                         class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+=======
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                         <i class="{{ page.feature_3_icon|default:'fa-solid fa-bolt' }}"></i>
                     </div>
                     <div>
@@ -351,10 +484,15 @@
                     </div>
                 </div>
                 <!-- Feature 4 -->
+<<<<<<< HEAD
                 <div
                     class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
                     <div
                         class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+=======
+                <div class="flex items-start gap-4 p-5 bg-slate-50/80 rounded-2xl border border-slate-100 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl shrink-0 shadow-sm">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                         <i class="{{ page.feature_4_icon|default:'fa-solid fa-hand-sparkles' }}"></i>
                     </div>
                     <div>
@@ -371,8 +509,12 @@
         <div class="bg-white rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden border border-slate-200">
             <!-- Form Header -->
             <div class="bg-brand-tealDark text-white text-center py-6 px-4 border-b border-white/10">
+<<<<<<< HEAD
                 <span
                     class="inline-block bg-brand-green/20 text-emerald-300 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider mb-1.5">
+=======
+                <span class="inline-block bg-brand-green/20 text-emerald-300 text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-wider mb-1.5">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                     ১০০% ক্যাশ অন ডেলিভারি
                 </span>
                 <h2 class="text-xl sm:text-2xl md:text-3xl font-bold">
@@ -399,6 +541,7 @@
 
                             <div class="space-y-3" id="bundleOptionsContainer">
                                 {% if page.bundles.all %}
+<<<<<<< HEAD
                                 {% for bundle in page.bundles.all %}
                                 <label
                                     class="bundle-label relative block cursor-pointer border-2 rounded-2xl p-4 transition-all {% if forloop.first %}is-selected border-brand-green bg-emerald-50/70 shadow-sm{% else %}border-slate-200 hover:border-slate-300{% endif %}">
@@ -420,6 +563,58 @@
                                                 <span class="text-xs text-slate-500">পরিমাণ: {{ bundle.quantity }}
                                                     টি</span>
                                             </div>
+=======
+                                    {% for bundle in page.bundles.all %}
+                                        <label class="bundle-label relative block cursor-pointer border-2 rounded-2xl p-4 transition-all {% if forloop.first %}is-selected border-brand-green bg-emerald-50/70 shadow-sm{% else %}border-slate-200 hover:border-slate-300{% endif %}">
+                                            <input type="radio" 
+                                                   name="bundle_id" 
+                                                   value="{{ bundle.id }}" 
+                                                   data-name="{{ bundle.name }}"
+                                                   data-price="{{ bundle.price }}"
+                                                   data-quantity="{{ bundle.quantity }}"
+                                                   class="peer sr-only" 
+                                                   {% if forloop.first %}checked{% endif %}
+                                                   onchange="calculateTotal()">
+                                            <div class="flex items-center justify-between pointer-events-none">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="radio-circle w-5 h-5 rounded-full border-2 {% if forloop.first %}border-brand-green{% else %}border-slate-300{% endif %} flex items-center justify-center shrink-0">
+                                                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green {% if not forloop.first %}hidden{% endif %} radio-dot"></div>
+                                                    </div>
+                                                    <div>
+                                                        <span class="font-bold text-slate-800 text-sm sm:text-base block">{{ bundle.name }}</span>
+                                                        <span class="text-xs text-slate-500">পরিমাণ: {{ bundle.quantity }} টি</span>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    {% if bundle.original_price %}
+                                                        <span class="text-xs text-slate-400 line-through block">৳{{ bundle.original_price|floatformat:0 }}</span>
+                                                    {% endif %}
+                                                    <span class="font-extrabold text-base sm:text-lg text-brand-green block">৳{{ bundle.price|floatformat:0 }}</span>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    {% endfor %}
+                                {% else %}
+                                    <!-- Fallback to single page base pricing if no bundles created -->
+                                    <label class="bundle-label is-selected relative block cursor-pointer border-2 border-brand-green bg-emerald-50/70 rounded-2xl p-4">
+                                        <input type="radio" 
+                                               name="bundle_id" 
+                                               value="default" 
+                                               data-name="{{ page.title }}"
+                                               data-price="{{ page.discount_price }}"
+                                               data-quantity="1"
+                                               class="peer sr-only" 
+                                               checked
+                                               onchange="calculateTotal()">
+                                        <div class="flex items-center justify-between pointer-events-none">
+                                            <div class="flex items-center gap-3">
+                                                <div class="radio-circle w-5 h-5 rounded-full border-2 border-brand-green flex items-center justify-center shrink-0">
+                                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-green radio-dot"></div>
+                                                </div>
+                                                <span class="font-bold text-slate-800">{{ page.title }}</span>
+                                            </div>
+                                            <span class="font-extrabold text-lg text-brand-green">৳{{ page.discount_price|floatformat:0 }}</span>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                                         </div>
                                         <div class="text-right">
                                             {% if bundle.original_price %}
@@ -481,10 +676,21 @@
                                     class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                     <i class="fa-solid fa-phone"></i>
                                 </span>
+<<<<<<< HEAD
                                 <input type="tel" name="phone_number" id="phone" required pattern="01[0-9]{9}"
                                     title="অনুগ্রহ করে ১১ ডিজিটের সঠিক মোবাইল নাম্বার লিখুন (যেমন: 01712345678)"
                                     class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 text-slate-800 transition"
                                     placeholder="০১৭xxxxxxxx">
+=======
+                                <input type="tel" 
+                                       name="phone_number" 
+                                       id="phone" 
+                                       required 
+                                       pattern="01[0-9]{9}"
+                                       title="অনুগ্রহ করে ১১ ডিজিটের সঠিক মোবাইল নাম্বার লিখুন (যেমন: 01712345678)"
+                                       class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:border-brand-green focus:ring-2 focus:ring-brand-green/20 text-slate-800 transition" 
+                                       placeholder="০১৭xxxxxxxx">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                             </div>
                             <small class="text-slate-400 text-xs mt-1 block">১১ ডিজিটের সঠিক মোবাইল নাম্বার দিন।</small>
                         </div>
@@ -510,6 +716,7 @@
                                 ডেলিভারি এলাকা নির্বাচন করুন <span class="text-rose-500">*</span>
                             </label>
                             <div class="space-y-2.5">
+<<<<<<< HEAD
                                 <label
                                     class="delivery-label is-selected flex items-center justify-between p-3.5 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-brand-green bg-emerald-50/70 shadow-sm">
                                     <div class="flex items-center gap-3">
@@ -517,10 +724,22 @@
                                             data-charge="{{ page.delivery_inside_dhaka }}"
                                             class="h-5 w-5 text-brand-green focus:ring-brand-green border-slate-300 accent-emerald-600"
                                             checked onchange="calculateTotal()">
+=======
+                                <label class="delivery-label is-selected flex items-center justify-between p-3.5 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-brand-green bg-emerald-50/70 shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <input type="radio" 
+                                               name="delivery_area" 
+                                               value="Inside Dhaka" 
+                                               data-charge="{{ page.delivery_inside_dhaka }}" 
+                                               class="h-5 w-5 text-brand-green focus:ring-brand-green border-slate-300 accent-emerald-600" 
+                                               checked 
+                                               onchange="calculateTotal()">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                                         <span class="font-medium text-slate-800 text-sm sm:text-base">ঢাকার ভিতরে</span>
                                     </div>
                                     <span class="font-bold text-brand-teal">৳{{ page.delivery_inside_dhaka }}</span>
                                 </label>
+<<<<<<< HEAD
                                 <label
                                     class="delivery-label flex items-center justify-between p-3.5 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200">
                                     <div class="flex items-center gap-3">
@@ -530,6 +749,17 @@
                                             onchange="calculateTotal()">
                                         <span class="font-medium text-slate-800 text-sm sm:text-base">ঢাকার
                                             বাহিরে</span>
+=======
+                                <label class="delivery-label flex items-center justify-between p-3.5 border-2 rounded-xl cursor-pointer hover:bg-slate-50 transition border-slate-200">
+                                    <div class="flex items-center gap-3">
+                                        <input type="radio" 
+                                               name="delivery_area" 
+                                               value="Outside Dhaka" 
+                                               data-charge="{{ page.delivery_outside_dhaka }}" 
+                                               class="h-5 w-5 text-brand-green focus:ring-brand-green border-slate-300 accent-emerald-600" 
+                                               onchange="calculateTotal()">
+                                        <span class="font-medium text-slate-800 text-sm sm:text-base">ঢাকার বাহিরে</span>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                                     </div>
                                     <span class="font-bold text-brand-teal">৳{{ page.delivery_outside_dhaka }}</span>
                                 </label>
@@ -540,10 +770,15 @@
 
                 <!-- Order Summary Card -->
                 <div class="md:col-span-5">
+<<<<<<< HEAD
                     <div
                         class="bg-slate-50 p-6 rounded-2xl sm:rounded-3xl border border-slate-200 h-fit sticky top-24 shadow-sm">
                         <h3
                             class="text-lg sm:text-xl font-bold text-brand-teal mb-4 border-b border-slate-200 pb-3 flex items-center gap-2">
+=======
+                    <div class="bg-slate-50 p-6 rounded-2xl sm:rounded-3xl border border-slate-200 h-fit sticky top-24 shadow-sm">
+                        <h3 class="text-lg sm:text-xl font-bold text-brand-teal mb-4 border-b border-slate-200 pb-3 flex items-center gap-2">
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                             <i class="fa-solid fa-receipt text-brand-green"></i> অর্ডার সামারি
                         </h3>
 
@@ -551,6 +786,7 @@
                             <div class="flex justify-between items-start gap-2">
                                 <span id="bundleNameDisplay" class="font-medium text-slate-700 leading-tight">
                                     {% if page.bundles.first %}
+<<<<<<< HEAD
                                     {{ page.bundles.first.name }}
                                     {% else %}
                                     {{ page.title }}
@@ -559,6 +795,15 @@
                                 <span id="bundlePriceDisplay" class="font-bold text-slate-900 shrink-0">
                                     ৳ {% if page.bundles.first %}{{ page.bundles.first.price|floatformat:0 }}{% else
                                     %}{{ page.discount_price|floatformat:0 }}{% endif %}
+=======
+                                        {{ page.bundles.first.name }}
+                                    {% else %}
+                                        {{ page.title }}
+                                    {% endif %}
+                                </span>
+                                <span id="bundlePriceDisplay" class="font-bold text-slate-900 shrink-0">
+                                    ৳ {% if page.bundles.first %}{{ page.bundles.first.price|floatformat:0 }}{% else %}{{ page.discount_price|floatformat:0 }}{% endif %}
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                                 </span>
                             </div>
 
@@ -574,6 +819,7 @@
                         <div class="flex justify-between items-center mb-6">
                             <span class="font-bold text-slate-800 text-lg">সর্বমোট</span>
                             <span id="totalPriceDisplay" class="font-extrabold text-brand-green text-2xl sm:text-3xl">
+<<<<<<< HEAD
                                 ৳ {% if page.bundles.first %}{{
                                 page.bundles.first.price|add:page.delivery_inside_dhaka|floatformat:0 }}{% else %}{{
                                 page.discount_price|add:page.delivery_inside_dhaka|floatformat:0 }}{% endif %}
@@ -584,6 +830,17 @@
                             class="w-full bg-brand-green hover:bg-brand-greenHover text-white text-lg sm:text-xl font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-circle-check"></i> {{ page.submit_button_text|default:"অর্ডার কনফার্ম
                             করুন" }}
+=======
+                                ৳ {% if page.bundles.first %}{{ page.bundles.first.price|add:page.delivery_inside_dhaka|floatformat:0 }}{% else %}{{ page.discount_price|add:page.delivery_inside_dhaka|floatformat:0 }}{% endif %}
+                            </span>
+                        </div>
+
+                        <button type="submit" 
+                                form="singlePageOrderForm" 
+                                id="submitBtn"
+                                class="w-full bg-brand-green hover:bg-brand-greenHover text-white text-lg sm:text-xl font-bold py-4 rounded-xl shadow-lg transition flex justify-center items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-circle-check"></i> {{ page.submit_button_text|default:"অর্ডার কনফার্ম করুন" }}
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
                         </button>
 
                         <div class="mt-4 pt-3 border-t border-slate-200 text-center space-y-1.5 text-xs text-slate-500">
@@ -628,12 +885,22 @@
 
     <!-- Floating WhatsApp Quick Button -->
     {% if site and site.whatsapp %}
+<<<<<<< HEAD
     <a href="https://wa.me/{{ site.whatsapp }}?text={{ page.title|urlencode }}%20সম্পর্কে%20জানতে%20চাই" target="_blank"
         rel="noopener noreferrer"
         class="fixed right-4 bottom-20 md:bottom-6 z-40 w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-110"
         title="WhatsApp এ অর্ডার বা সহায়তা">
         <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
     </a>
+=======
+        <a href="https://wa.me/{{ site.whatsapp }}?text={{ page.title|urlencode }}%20সম্পর্কে%20জানতে%20চাই" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="fixed right-4 bottom-20 md:bottom-6 z-40 w-12 h-12 sm:w-14 sm:h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-110" 
+           title="WhatsApp এ অর্ডার বা সহায়তা">
+            <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
+        </a>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
     {% endif %}
 
     <!-- Sticky Bottom Bar for Mobile -->
@@ -649,6 +916,7 @@
         </a>
     </div>
 
+<<<<<<< HEAD
     <!-- Dedicated JavaScript for Single Landing Page (Gallery, Auto-scroll, Dynamic Pricing & Checkout) -->
     <script>
         // ==========================================
@@ -887,6 +1155,10 @@
             }
         });
     </script>
+=======
+    <!-- Static JavaScript file containing all interactive features -->
+    <script src="{% static 'landingpage/js/main.js' %}"></script>
+>>>>>>> 5d3099936ef553064daab238f2ad3668e4f2a93e
 </body>
 
 </html>
