@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful | {% if site %}{{ site.site_name }}{% else %}AR SOLUTIONS BD{% endif %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: {
+            fontFamily: { sans: ['"Plus Jakarta Sans"','"Hind Siliguri"','sans-serif'], bn: ['"Hind Siliguri"','sans-serif'] },
+            colors: { brand: { teal:'#0B3C49', green:'#25A264', greenHover:'#1E8752' } }
+        } } }
+    </script>
+</head>
+<body class="font-bn min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div class="bg-white max-w-md w-full rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
+        <div class="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-5">
+            <i class="fa-solid fa-check text-4xl text-brand-green"></i>
+        </div>
+        <h1 class="text-2xl font-extrabold text-brand-teal mb-3">ধন্যবাদ!</h1>
+        <p class="text-gray-600 leading-relaxed mb-6">আপনার অর্ডারটি সফলভাবে রিসিভ হয়েছে। আমাদের প্রতিনিধি খুব শীঘ্রই আপনার সাথে যোগাযোগ করবে।</p>
+        <a href="/" class="inline-block bg-brand-green hover:bg-brand-greenHover text-white px-6 py-3 rounded-xl font-bold transition">হোম পেজে ফিরে যান</a>
+    </div>
+</body>
+</html>
+        
+        <!-- এখানে 'index' এর বদলে 'home' দেওয়া হয়েছে -->
+        <a href="{% url 'home' %}">হোম পেজে ফিরে যান</a>
+    </div>
+</body>
+</html>

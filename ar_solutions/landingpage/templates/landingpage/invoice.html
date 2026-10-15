@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Print Invoice</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; }
+        .invoice-box { background: #fff; max-width: 800px; margin: 20px auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0, 0, 0, 0.15); font-size: 16px; color: #555; page-break-after: always; }
+        .invoice-box table { width: 100%; line-height: inherit; text-align: left; border-collapse: collapse; }
+        .invoice-box table td { padding: 8px; vertical-align: top; }
+        .invoice-box table tr td:nth-child(2) { text-align: right; }
+        .invoice-box table tr.top table td { padding-bottom: 20px; }
+        .invoice-box table tr.top table td.title { font-size: 35px; color: #0b4973; font-weight: bold; }
+        .invoice-box table tr.information table td { padding-bottom: 20px; }
+        .invoice-box table tr.heading td { background: #eee; border-bottom: 1px solid #ddd; font-weight: bold; color: #333; }
+        .invoice-box table tr.item td { border-bottom: 1px solid #eee; }
+        .invoice-box table tr.total td:nth-child(2) { border-top: 2px solid #0b4973; font-weight: bold; font-size: 18px; color: #0b4973; }
+        
+        .action-buttons { text-align: center; margin: 20px 0; }
+        .btn-print { padding: 10px 25px; background: #269a53; color: white; border: none; font-size: 18px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .btn-back { padding: 10px 20px; background: #0b4973; color: white; text-decoration: none; border-radius: 5px; margin-left: 10px; font-weight: bold; }
+        
+        /* প্রিন্ট করার সময় বাটনগুলো যেন প্রিন্ট না হয় তার জন্য */
+        @media print {
+            .action-buttons { display: none; }
+            body { background: #fff; }
+            .invoice-box { box-shadow: none; border: none; margin: 0; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="action-buttons">
+        <button class="btn-print" onclick="window.print()">🖨️ Print Invoices</button>
+        <a href="/admin/landingpage/order/" class="btn-back">🔙 Back to Admin</a>
+    </div>
+
+    {% for order in orders %}
+    <div class="invoice-box">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                {% if site and site.logo %}
+                                    <img src="{{ site.logo.url }}" style="max-width:150px;">
+                                {% else %}
+                                    AR SOLUTIONS BD
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>Invoice #:</strong> {{ order.id }}<br>
+                                <strong>Order Date:</strong> {{ order.created_at|date:"d M Y" }}<br>
+                                <strong>Status:</strong> {{ order.status }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="information">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>From:</strong><br>
+                                {% if site %}{{ site.site_name }}{% else %}AR SOLUTIONS BD{% endif %}<br>
+                                {% if site %}{{ site.slogan }}{% endif %}
+                            </td>
+                            <td>
+                                <strong>To (Customer):</strong><br>
+                                {{ order.customer_name }}<br>
+                                {{ order.phone_number }}<br>
+                                {{ order.address }}<br>
+                                {{ order.delivery_area }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="heading">
+                <td>Item Details</td>
+                <td>Price</td>
+            </tr>
+            <tr class="item">
+                <td>{{ order.product.title }} (Quantity: {{ order.quantity }})</td>
+                <td>৳ {{ order.sub_total }}</td>
+            </tr>
+            <tr class="item">
+                <td>Delivery Charge ({{ order.delivery_area }})</td>
+                <td>৳ {{ order.delivery_charge }}</td>
+            </tr>
+            <tr class="total">
+                <td></td>
+                <td>Total Bill: ৳ {{ order.total_bill }}</td>
+            </tr>
+        </table>
+    </div>
+    {% endfor %}
+
+</body>
+</html>

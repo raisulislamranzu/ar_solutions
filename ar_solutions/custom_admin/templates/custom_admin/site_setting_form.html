@@ -1,0 +1,86 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Site Content{% endblock %}
+{% block page_title %}Website Content & Settings{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row g-3">
+        <div class="col-lg-8">
+            <div class="card stat-card mb-3">
+                <div class="card-header bg-white"><strong><i class="bi bi-building"></i> Branding</strong></div>
+                <div class="card-body">
+                    {% for field in form %}
+                        {% if field.name in 'site_name slogan logo' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.name == 'logo' and field.value %}<div class="mt-2"><img src="{{ field.value.url }}" width="90" class="border rounded"></div>{% endif %}
+                            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card stat-card mb-3">
+                <div class="card-header bg-white"><strong><i class="bi bi-megaphone"></i> Top Bar & Contact</strong></div>
+                <div class="card-body">
+                    {% for field in form %}
+                        {% if field.name in 'cod_notice helpline whatsapp' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+                            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card stat-card mb-3">
+                <div class="card-header bg-white"><strong><i class="bi bi-image"></i> Hero Section</strong></div>
+                <div class="card-body">
+                    {% for field in form %}
+                        {% if field.name in 'hero_badge hero_title hero_subtitle' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card stat-card mb-3">
+                <div class="card-header bg-white"><strong><i class="bi bi-layout-text-window"></i> Footer</strong></div>
+                <div class="card-body">
+                    {% for field in form %}
+                        {% if field.name == 'footer_about' %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card stat-card">
+                <div class="card-header bg-white"><strong>Save Changes</strong></div>
+                <div class="card-body">
+                    <p class="text-muted small">These settings control the content shown across your public website. Changes appear instantly on the live site.</p>
+                    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-lg"></i> Save Settings</button>
+                    <a href="{% url 'custom_admin:dashboard' %}" class="btn btn-secondary w-100 mt-2">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

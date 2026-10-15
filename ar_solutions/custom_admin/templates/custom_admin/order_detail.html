@@ -1,0 +1,55 @@
+{% extends 'custom_admin/base.html' %}
+{% block title %}Order #{{ order.id }}{% endblock %}
+{% block page_title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-end mb-3 gap-2">
+    <a href="{% url 'custom_admin:order_invoice' order.pk %}" class="btn btn-dark"><i class="bi bi-printer"></i> Print Invoice</a>
+    <a href="{% url 'custom_admin:order_edit' order.pk %}" class="btn btn-warning"><i class="bi bi-pencil"></i> Edit</a>
+    <a href="{% url 'custom_admin:order_delete' order.pk %}" class="btn btn-danger"><i class="bi bi-trash"></i> Delete</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-header bg-white"><strong>Customer Information</strong></div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th style="width:40%;">Name</th><td>{{ order.customer_name }}</td></tr>
+                    <tr><th>Phone</th><td>{{ order.phone_number }}</td></tr>
+                    <tr><th>Address</th><td>{{ order.address }}</td></tr>
+                    <tr><th>Delivery Area</th><td>{{ order.delivery_area }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card h-100">
+            <div class="card-header bg-white"><strong>Order Summary</strong></div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr><th style="width:40%;">Product</th><td>{{ order.product.title|default:"—" }}</td></tr>
+                    <tr><th>Quantity</th><td>{{ order.quantity }}</td></tr>
+                    <tr><th>Sub Total</th><td>৳ {{ order.sub_total }}</td></tr>
+                    <tr><th>Delivery Charge</th><td>৳ {{ order.delivery_charge }}</td></tr>
+                    <tr><th>Total Bill</th><td class="fw-bold text-danger">৳ {{ order.total_bill }}</td></tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            {% if order.status == 'Completed' %}<span class="badge bg-success">Completed</span>
+                            {% elif order.status == 'Pending' %}<span class="badge bg-warning text-dark">Pending</span>
+                            {% elif order.status == 'Processing' %}<span class="badge bg-info text-dark">Processing</span>
+                            {% else %}<span class="badge bg-danger">Cancelled</span>{% endif %}
+                        </td>
+                    </tr>
+                    <tr><th>Ordered At</th><td>{{ order.created_at|date:"d M Y, H:i" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'custom_admin:order_list' %}" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Back to Orders</a>
+</div>
+{% endblock %}
