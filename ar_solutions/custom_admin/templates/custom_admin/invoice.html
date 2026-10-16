@@ -49,7 +49,7 @@
                             </td>
                             <td>
                                 <strong>Invoice #:</strong> {{ order.id }}<br>
-                                <strong>Order Date:</strong> {{ order.created_at|date:"d M Y" }}<br>
+                                <strong>Order Date:</strong> {{ order.created_at|date:"d M Y, h:i A" }}<br>
                                 <strong>Status:</strong> {{ order.status }}
                             </td>
                         </tr>

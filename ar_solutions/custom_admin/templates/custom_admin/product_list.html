@@ -35,8 +35,9 @@
                             {% else %}<span class="text-muted">No image</span>{% endif %}
                         </td>
                         <td>
-                            {{ product.title }}
-                            {% if product.badge %}<span class="badge bg-warning text-dark ms-1">{{ product.badge }}</span>{% endif %}
+                            <strong class="d-block text-dark">{{ product.title }}</strong>
+                            {% if product.badge %}<span class="badge bg-warning text-dark mb-1">{{ product.badge }}</span>{% endif %}
+                            <small class="text-muted d-block"><i class="bi bi-clock"></i> Uploaded: {{ product.created_at|date:"d M Y, h:i A" }}</small>
                         </td>
                         <td>{{ product.category.name|default:"—" }}</td>
                         <td>৳ {{ product.regular_price }}</td>

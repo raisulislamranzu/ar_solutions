@@ -58,7 +58,7 @@
                             {% else %}<span class="badge bg-danger">Cancelled</span>{% endif %}
                         </td>
                     </tr>
-                    <tr><th>Ordered At</th><td>{{ order.created_at|date:"d M Y, H:i" }}</td></tr>
+                    <tr><th>Ordered At</th><td><strong>{{ order.created_at|date:"d M Y, h:i A" }}</strong> <span class="badge bg-light text-muted border ms-1">BDT</span></td></tr>
                 </table>
             </div>
         </div>

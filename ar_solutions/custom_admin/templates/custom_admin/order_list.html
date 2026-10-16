@@ -56,8 +56,10 @@
                             {% elif order.status == 'Pending' %}<span class="badge bg-warning text-dark">Pending</span>
                             {% elif order.status == 'Processing' %}<span class="badge bg-info text-dark">Processing</span>
                             {% else %}<span class="badge bg-danger">Cancelled</span>{% endif %}
+                        <td>
+                            <div class="fw-semibold text-dark">{{ order.created_at|date:"d M Y" }}</div>
+                            <small class="text-muted"><i class="bi bi-clock"></i> {{ order.created_at|date:"h:i A" }}</small>
                         </td>
-                        <td>{{ order.created_at|date:"d M Y" }}</td>
                         <td>
                             <a href="{% url 'custom_admin:order_detail' order.pk %}" class="btn btn-sm btn-info text-white"><i class="bi bi-eye"></i></a>
                             <a href="{% url 'custom_admin:order_edit' order.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>

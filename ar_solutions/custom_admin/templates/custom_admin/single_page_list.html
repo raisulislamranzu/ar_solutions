@@ -43,6 +43,7 @@
                             <a href="/{{ page.slug }}/" target="_blank" class="text-decoration-none small text-primary">
                                 /{{ page.slug }}/ <i class="bi bi-box-arrow-up-right small"></i>
                             </a>
+                            <small class="text-muted d-block"><i class="bi bi-clock"></i> Created: {{ page.created_at|date:"d M Y, h:i A" }}</small>
                         </td>
                         <td>
                             {% if page.linked_product %}
