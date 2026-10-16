@@ -503,8 +503,13 @@ function switchMainImage(src, btn, index) {
   if (btn) {
     btn.classList.add('border-brand-green', 'ring-2', 'ring-brand-green/30', 'scale-105', 'shadow-sm');
     btn.classList.remove('border-slate-200', 'opacity-60');
-    if (btn.scrollIntoView) {
-      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    // Scroll only the thumbnail container horizontally, NEVER scroll the window/page
+    const container = document.getElementById('galleryThumbnails') || btn.parentElement;
+    if (container && typeof container.scrollTo === 'function') {
+      const containerRect = container.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      const scrollOffset = (btnRect.left - containerRect.left) + container.scrollLeft - (container.clientWidth / 2) + (btn.offsetWidth / 2);
+      container.scrollTo({ left: Math.max(0, scrollOffset), behavior: 'smooth' });
     }
   }
   // Update dot indicators
@@ -651,13 +656,27 @@ function initSinglePage() {
     }
   }
 
-  // 2. Setup hover & touch auto-scroll listeners
+  // 2. Setup hover & touch auto-scroll listeners + pause when off-screen
   if (galleryBox) {
     galleryBox.addEventListener('mouseenter', stopAutoScroll);
     galleryBox.addEventListener('mouseleave', startAutoScroll);
     galleryBox.addEventListener('touchstart', stopAutoScroll, { passive: true });
     galleryBox.addEventListener('touchend', startAutoScroll, { passive: true });
-    startAutoScroll();
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            startAutoScroll();
+          } else {
+            stopAutoScroll();
+          }
+        });
+      }, { threshold: 0.1 });
+      observer.observe(galleryBox);
+    } else {
+      startAutoScroll();
+    }
   }
 
   // 3. Setup package click & change listeners
