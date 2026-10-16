@@ -47,7 +47,7 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = [
             'customer_name', 'phone_number', 'address', 'delivery_area',
-            'quantity', 'status',
+            'quantity', 'sub_total', 'delivery_charge', 'total_bill', 'status',
         ]
         widgets = {
             'customer_name': forms.TextInput(attrs={'class': 'form-control'}),
@@ -55,6 +55,9 @@ class OrderForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'delivery_area': forms.Select(attrs={'class': 'form-select'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'sub_total': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'delivery_charge': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'total_bill': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
         }
 

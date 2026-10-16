@@ -11,11 +11,11 @@
                 <div class="card-header bg-white"><strong><i class="bi bi-building"></i> Branding</strong></div>
                 <div class="card-body">
                     {% for field in form %}
-                        {% if field.name in 'site_name slogan logo' %}
+                        {% if field.name == 'site_name' or field.name == 'slogan' or field.name == 'logo' %}
                         <div class="mb-3">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                             {{ field }}
-                            {% if field.name == 'logo' and field.value %}<div class="mt-2"><img src="{{ field.value.url }}" width="90" class="border rounded"></div>{% endif %}
+                            {% if field.name == 'logo' and form.instance.logo %}<div class="mt-2"><img src="{{ form.instance.logo.url }}" width="90" class="border rounded"></div>{% endif %}
                             {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                         </div>
                         {% endif %}
@@ -27,7 +27,7 @@
                 <div class="card-header bg-white"><strong><i class="bi bi-megaphone"></i> Top Bar & Contact</strong></div>
                 <div class="card-body">
                     {% for field in form %}
-                        {% if field.name in 'cod_notice helpline whatsapp' %}
+                        {% if field.name == 'cod_notice' or field.name == 'helpline' or field.name == 'whatsapp' %}
                         <div class="mb-3">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                             {{ field }}
@@ -43,7 +43,7 @@
                 <div class="card-header bg-white"><strong><i class="bi bi-image"></i> Hero Section</strong></div>
                 <div class="card-body">
                     {% for field in form %}
-                        {% if field.name in 'hero_badge hero_title hero_subtitle' %}
+                        {% if field.name == 'hero_badge' or field.name == 'hero_title' or field.name == 'hero_subtitle' %}
                         <div class="mb-3">
                             <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                             {{ field }}

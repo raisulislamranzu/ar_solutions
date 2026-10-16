@@ -269,6 +269,17 @@
             <div class="p-5 sm:p-8 md:p-10 grid grid-cols-1 md:grid-cols-12 gap-8">
                 <!-- Form Inputs -->
                 <div class="md:col-span-7">
+                    {% if messages %}
+                        <div class="mb-5 space-y-2">
+                            {% for message in messages %}
+                                <div class="p-4 rounded-xl text-sm font-semibold flex items-center gap-2 {% if message.tags == 'error' %}bg-rose-50 text-rose-700 border border-rose-200{% else %}bg-emerald-50 text-emerald-800 border border-emerald-200{% endif %}">
+                                    <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation text-rose-500{% else %}fa-circle-check text-emerald-500{% endif %}"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
                     <form id="singlePageOrderForm" method="POST" action="{% url 'single_page_order' page.slug %}">
                         {% csrf_token %}
                         
@@ -282,7 +293,7 @@
                             <div class="space-y-3" id="bundleOptionsContainer">
                                 {% if page.bundles.all %}
                                     {% for bundle in page.bundles.all %}
-                                        <label class="bundle-label relative block cursor-pointer border-2 rounded-2xl p-4 transition-all {% if forloop.first %}is-selected border-brand-green bg-emerald-50/70 shadow-sm{% else %}border-slate-200 hover:border-slate-300{% endif %}">
+                                        <label class="bundle-label relative block cursor-pointer border-2 rounded-2xl p-4 transition-all {% if bundle.is_default or forloop.first %}is-selected border-brand-green bg-emerald-50/70 shadow-sm{% else %}border-slate-200 hover:border-slate-300{% endif %}">
                                             <input type="radio" 
                                                    name="bundle_id" 
                                                    value="{{ bundle.id }}" 
@@ -290,12 +301,12 @@
                                                    data-price="{{ bundle.price }}"
                                                    data-quantity="{{ bundle.quantity }}"
                                                    class="peer sr-only" 
-                                                   {% if forloop.first %}checked{% endif %}
+                                                   {% if bundle.is_default or forloop.first %}checked{% endif %}
                                                    onchange="calculateTotal()">
                                             <div class="flex items-center justify-between pointer-events-none">
                                                 <div class="flex items-center gap-3">
-                                                    <div class="radio-circle w-5 h-5 rounded-full border-2 {% if forloop.first %}border-brand-green{% else %}border-slate-300{% endif %} flex items-center justify-center shrink-0">
-                                                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green {% if not forloop.first %}hidden{% endif %} radio-dot"></div>
+                                                    <div class="radio-circle w-5 h-5 rounded-full border-2 {% if bundle.is_default or forloop.first %}border-brand-green{% else %}border-slate-300{% endif %} flex items-center justify-center shrink-0">
+                                                        <div class="w-2.5 h-2.5 rounded-full bg-brand-green {% if not bundle.is_default and not forloop.first %}hidden{% endif %} radio-dot"></div>
                                                     </div>
                                                     <div>
                                                         <span class="font-bold text-slate-800 text-sm sm:text-base block">{{ bundle.name }}</span>

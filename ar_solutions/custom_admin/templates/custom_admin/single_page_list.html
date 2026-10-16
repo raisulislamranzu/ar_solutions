@@ -58,7 +58,7 @@
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge bg-info text-dark">{{ page.bundles.count }} Packages</span>
+                            <span class="badge bg-info text-dark">{{ page.bundles.all|length }} Packages</span>
                         </td>
                         <td>
                             <a href="{% url 'custom_admin:order_list' %}?q={{ page.title }}" class="badge bg-secondary text-decoration-none">

@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib import messages
 
 from .models import SiteSetting, Product, Order, Category, SinglePage, SinglePageBundle
 
@@ -16,8 +17,8 @@ def _build_products_data(products):
             'title': p.title,
             'slug': p.slug,
             'category': p.category.name if p.category else '',
-            'price': float(p.discount_price),
-            'oldPrice': float(p.regular_price),
+            'price': float(p.discount_price) if p.discount_price else 0.0,
+            'oldPrice': float(p.regular_price) if p.regular_price else 0.0,
             'image': p.image.url if p.image else '',
             'description': p.description,
             'rating': float(p.rating),
@@ -77,6 +78,7 @@ def single_page_order(request, slug):
     if not (name and phone and address):
         if request.content_type == 'application/json':
             return JsonResponse({'success': False, 'message': 'অনুগ্রহ করে সব তথ্য সঠিকভাবে পূরণ করুন।'}, status=400)
+        messages.error(request, 'অনুগ্রহ করে সব তথ্য সঠিকভাবে পূরণ করুন।')
         return redirect('single_page_detail', slug=slug)
 
     # Determine bundle / package pricing
@@ -129,12 +131,14 @@ def single_page_order(request, slug):
 def dynamic_landing_dispatcher(request, slug):
     """
     Intelligent slug router:
-    1. If a SinglePage with this slug exists and is active, render the custom single page.
+    1. If a SinglePage with this slug exists and is active, render or order the custom single page.
     2. Else if a Product with this slug exists and is active, render product_landing.
     3. Else 404.
     """
     single_page = SinglePage.objects.filter(slug=slug, is_active=True).prefetch_related('bundles').first()
     if single_page:
+        if request.method == 'POST':
+            return single_page_order(request, slug)
         site_setting = SiteSetting.objects.first()
         return render(request, 'landingpage/single_page.html', {
             'site': site_setting,
@@ -149,11 +153,20 @@ def product_landing(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
 
     if request.method == "POST":
-        name = request.POST.get('name')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
-        area = request.POST.get('area')
-        quantity = int(request.POST.get('quantity', 1))
+        name = (request.POST.get('name') or '').strip()
+        phone = (request.POST.get('phone') or '').strip()
+        address = (request.POST.get('address') or '').strip()
+        area = request.POST.get('area') or 'Inside Dhaka'
+        try:
+            quantity = int(request.POST.get('quantity', 1))
+        except (TypeError, ValueError):
+            quantity = 1
+        if quantity < 1:
+            quantity = 1
+
+        if not (name and phone and address):
+            messages.error(request, 'অনুগ্রহ করে আপনার নাম, মোবাইল নাম্বার এবং সম্পূর্ণ ঠিকানা সঠিকভাবে পূরণ করুন।')
+            return render(request, 'landingpage/index.html', {'site': site_setting, 'product': product})
 
         delivery_charge = product.delivery_inside_dhaka if area == 'Inside Dhaka' else product.delivery_outside_dhaka
         sub_total = product.discount_price * quantity
@@ -161,6 +174,7 @@ def product_landing(request, slug):
 
         Order.objects.create(
             product=product,
+            package_name=product.title,
             customer_name=name,
             phone_number=phone,
             address=address,
@@ -168,7 +182,8 @@ def product_landing(request, slug):
             quantity=quantity,
             sub_total=sub_total,
             delivery_charge=delivery_charge,
-            total_bill=total_bill
+            total_bill=total_bill,
+            status='Pending'
         )
         return redirect('success')
 
@@ -224,6 +239,7 @@ def create_order(request):
 
     order = Order.objects.create(
         product=product,
+        package_name=product.title,
         customer_name=name,
         phone_number=phone,
         address=address,
@@ -232,6 +248,7 @@ def create_order(request):
         sub_total=sub_total,
         delivery_charge=delivery_charge,
         total_bill=total_bill,
+        status='Pending',
     )
     return JsonResponse({'success': True, 'order_id': order.id,
                          'message': 'আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।'})
@@ -274,6 +291,7 @@ def checkout(request):
         total_bill = sub_total + delivery_charge
         order = Order.objects.create(
             product=product,
+            package_name=product.title,
             customer_name=name,
             phone_number=phone,
             address=address,
@@ -282,6 +300,7 @@ def checkout(request):
             sub_total=sub_total,
             delivery_charge=delivery_charge,
             total_bill=total_bill,
+            status='Pending',
         )
         created_ids.append(order.id)
 

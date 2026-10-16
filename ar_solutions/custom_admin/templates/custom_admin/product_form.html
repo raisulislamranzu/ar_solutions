@@ -22,7 +22,7 @@
                             <div class="mb-3">
                                 <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                                 {{ field }}
-                                {% if field.name == 'image' and field.value %}<div class="mt-2"><img src="{{ field.value.url }}" width="90" class="border rounded"></div>{% endif %}
+                                {% if field.name == 'image' and form.instance.image %}<div class="mt-2"><img src="{{ form.instance.image.url }}" width="90" class="border rounded"></div>{% endif %}
                                 {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
                                 {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                             </div>

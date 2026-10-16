@@ -57,7 +57,7 @@ class Product(models.Model):
     @property
     def discount_percent(self):
         try:
-            if self.regular_price and self.regular_price > 0:
+            if self.regular_price and self.discount_price and self.regular_price > self.discount_price > 0:
                 return int(round((self.regular_price - self.discount_price) / self.regular_price * 100))
         except Exception:
             pass
@@ -65,7 +65,30 @@ class Product(models.Model):
 
     @property
     def highlight_list(self):
+        if not self.highlights:
+            return []
         return [line.strip() for line in self.highlights.splitlines() if line.strip()]
+
+    @property
+    def embed_video_url(self):
+        if not self.video_url:
+            return ""
+        url = self.video_url.strip()
+        if 'youtube.com/embed/' in url:
+            return url
+        if 'youtube.com/watch?v=' in url:
+            try:
+                video_id = url.split('watch?v=')[1].split('&')[0]
+                return f"https://www.youtube.com/embed/{video_id}"
+            except Exception:
+                return url
+        if 'youtu.be/' in url:
+            try:
+                video_id = url.split('youtu.be/')[1].split('?')[0]
+                return f"https://www.youtube.com/embed/{video_id}"
+            except Exception:
+                return url
+        return url
 
 class SinglePage(models.Model):
     # Basic
@@ -135,13 +158,23 @@ class SinglePage(models.Model):
     @property
     def all_images(self):
         imgs = []
-        if self.hero_image:
-            imgs.append(self.hero_image.url)
+        try:
+            if self.hero_image and hasattr(self.hero_image, 'url'):
+                imgs.append(self.hero_image.url)
+        except Exception:
+            pass
         for img_obj in self.images.all():
-            if img_obj.image and img_obj.image.url not in imgs:
-                imgs.append(img_obj.image.url)
-        if not imgs and self.linked_product and self.linked_product.image:
-            imgs.append(self.linked_product.image.url)
+            try:
+                if img_obj.image and hasattr(img_obj.image, 'url') and img_obj.image.url not in imgs:
+                    imgs.append(img_obj.image.url)
+            except Exception:
+                pass
+        if not imgs and self.linked_product:
+            try:
+                if self.linked_product.image and hasattr(self.linked_product.image, 'url'):
+                    imgs.append(self.linked_product.image.url)
+            except Exception:
+                pass
         return imgs
 
     @property

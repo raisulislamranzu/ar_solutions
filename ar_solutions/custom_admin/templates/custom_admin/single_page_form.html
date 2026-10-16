@@ -8,11 +8,12 @@
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             
-            {% if form.errors or formset.errors %}
+            {% if form.errors or formset.errors or images_formset.errors %}
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Please correct the errors below:</strong>
                     {{ form.errors }}
                     {{ formset.errors }}
+                    {{ images_formset.errors }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endif %}
@@ -364,6 +365,9 @@
                                 <strong>Package / Bundle Pricing Options</strong>
                                 <small class="text-muted d-block">Customers will select one of these packages on checkout with real-time price update.</small>
                             </div>
+                            <button type="button" class="btn btn-sm btn-outline-success" id="add-bundle-row">
+                                <i class="bi bi-plus-circle me-1"></i> Add Another Package
+                            </button>
                         </div>
                         <div class="card-body p-0">
                             {{ formset.management_form }}
@@ -380,7 +384,7 @@
                                             <th style="width:70px;">Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="bundles-tbody">
                                         {% for bundle_form in formset %}
                                             <tr>
                                                 <td>
@@ -503,6 +507,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // 3. Dynamic add bundle row
+    const addBundleBtn = document.getElementById('add-bundle-row');
+    const bundlesTbody = document.getElementById('bundles-tbody');
+    const totalBundlesInput = document.getElementById('id_bundles-TOTAL_FORMS');
+    if (addBundleBtn && bundlesTbody && totalBundlesInput) {
+        addBundleBtn.addEventListener('click', function() {
+            const currentCount = parseInt(totalBundlesInput.value, 10);
+            const rows = bundlesTbody.querySelectorAll('tr');
+            if (!rows.length) return;
+            const newRow = rows[rows.length - 1].cloneNode(true);
+            newRow.querySelectorAll('input').forEach(input => {
+                const name = input.name || '';
+                const id = input.id || '';
+                input.name = name.replace(/bundles-\d+-/, `bundles-${currentCount}-`);
+                input.id = id.replace(/id_bundles-\d+-/, `id_bundles-${currentCount}-`);
+                if (input.type === 'checkbox') {
+                    input.checked = false;
+                } else if (input.name.endsWith('-id')) {
+                    input.value = '';
+                } else if (input.name.endsWith('-order')) {
+                    input.value = currentCount;
+                } else if (input.name.endsWith('-quantity')) {
+                    input.value = '1';
+                } else {
+                    input.value = '';
+                }
+            });
+            newRow.querySelectorAll('.text-danger').forEach(el => el.remove());
+            bundlesTbody.appendChild(newRow);
+            totalBundlesInput.value = currentCount + 1;
+        });
+    }
 });
 </script>
 {% endblock %}

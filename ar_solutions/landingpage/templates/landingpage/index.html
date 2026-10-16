@@ -103,10 +103,25 @@
                     {% endfor %}
                 </ul>
                 {% endif %}
+                {% if product.embed_video_url %}
+                <div class="mt-4 aspect-video rounded-xl overflow-hidden shadow bg-black">
+                    <iframe src="{{ product.embed_video_url }}" class="w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                {% endif %}
             </div>
 
             <!-- Checkout -->
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                {% if messages %}
+                    <div class="mb-4 space-y-2 font-bn">
+                        {% for message in messages %}
+                            <div class="p-3 rounded-xl text-sm font-semibold flex items-center gap-2 {% if message.tags == 'error' %}bg-rose-50 text-rose-700 border border-rose-200{% else %}bg-emerald-50 text-emerald-800 border border-emerald-200{% endif %}">
+                                <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation text-rose-500{% else %}fa-circle-check text-emerald-500{% endif %}"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
                 <h3 class="text-lg font-bold text-brand-teal font-bn mb-4"><i
                         class="fa-solid fa-clipboard-list mr-1"></i> অর্ডার ফর্ম</h3>
                 <form method="POST" action="" class="space-y-4 font-bn">

@@ -11,5 +11,6 @@ urlpatterns = [
     path('success/', views.success, name='success'),
     path('page/<slug:slug>/', views.single_page_detail, name='single_page_detail'),
     path('page/<slug:slug>/order/', views.single_page_order, name='single_page_order'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
     path('<slug:slug>/', views.dynamic_landing_dispatcher, name='product_landing'), # dynamic router (SinglePage -> Product)
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]

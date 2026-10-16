@@ -408,15 +408,19 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken
+          'X-CSRFToken': getCookie('csrftoken') || ''
         },
         body: JSON.stringify(payload),
       })
-        .then(r => r.json())
-        .then(data => {
-          closeQuickOrderModal();
-          showToast(data.message || 'ধন্যবাদ! আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
-          quickOrderForm.reset();
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (ok && data.success) {
+            closeQuickOrderModal();
+            showToast(data.message || 'ধন্যবাদ! আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
+            quickOrderForm.reset();
+          } else {
+            showToast(data.message || 'অনুগ্রহ করে সব তথ্য সঠিকভাবে পূরণ করুন।');
+          }
         })
         .catch(() => showToast('দুঃখিত, অর্ডারটি নেওয়া যায়নি। আবার চেষ্টা করুন।'));
     });
@@ -440,17 +444,21 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken
+          'X-CSRFToken': getCookie('csrftoken') || ''
         },
         body: JSON.stringify(payload),
       })
-        .then(r => r.json())
-        .then(data => {
-          closeCheckout();
-          showToast(data.message || 'ধন্যবাদ! আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
-          cart = [];
-          updateCartUI();
-          renderProducts();
+        .then(r => r.json().then(data => ({ ok: r.ok, data })))
+        .then(({ ok, data }) => {
+          if (ok && data.success) {
+            closeCheckout();
+            showToast(data.message || 'ধন্যবাদ! আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে।');
+            cart = [];
+            updateCartUI();
+            renderProducts();
+          } else {
+            showToast(data.message || 'অনুগ্রহ করে সব তথ্য সঠিকভাবে পূরণ করুন।');
+          }
         })
         .catch(() => showToast('দুঃখিত, অর্ডারটি নেওয়া যায়নি। আবার চেষ্টা করুন।'));
     });

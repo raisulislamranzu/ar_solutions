@@ -119,7 +119,17 @@
                     <tr>
                         <td>{{ order.id }}</td>
                         <td>{{ order.customer_name }}</td>
-                        <td>{{ order.product.title|default:"—" }}</td>
+                        <td>
+                            {% if order.product %}
+                                {{ order.product.title }}
+                            {% elif order.landing_page %}
+                                {{ order.landing_page.title }}
+                            {% elif order.package_name %}
+                                {{ order.package_name }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
                         <td>৳ {{ order.total_bill }}</td>
                         <td>
                             {% if order.status == 'Completed' %}<span class="badge bg-success">Completed</span>

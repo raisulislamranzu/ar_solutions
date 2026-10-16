@@ -26,7 +26,7 @@ def dashboard(request):
     pending_orders = Order.objects.filter(status='Pending').count()
     total_revenue = Order.objects.filter(status='Completed').aggregate(Sum('total_bill'))['total_bill__sum'] or 0
 
-    recent_orders = Order.objects.select_related('product').order_by('-created_at')[:8]
+    recent_orders = Order.objects.select_related('product', 'landing_page').order_by('-created_at')[:8]
     orders_by_status = Order.objects.values('status').annotate(count=Count('id')).order_by('status')
 
     daily_sales = (
@@ -163,17 +163,22 @@ def category_delete(request, pk):
 @user_passes_test(is_staff_user, login_url='custom_admin:login')
 def order_list(request):
     status = request.GET.get('status', '')
-    query = request.GET.get('q', '')
+    query = request.GET.get('q', '').strip()
     orders = Order.objects.select_related('product', 'landing_page').order_by('-created_at')
     if status:
         orders = orders.filter(status=status)
     if query:
-        orders = orders.filter(
+        clean_q = query.lstrip('#').strip()
+        q_filter = (
             models.Q(customer_name__icontains=query) |
             models.Q(phone_number__icontains=query) |
             models.Q(package_name__icontains=query) |
-            models.Q(landing_page__title__icontains=query)
+            models.Q(landing_page__title__icontains=query) |
+            models.Q(product__title__icontains=query)
         )
+        if clean_q.isdigit():
+            q_filter |= models.Q(id=int(clean_q))
+        orders = orders.filter(q_filter)
     return render(request, 'custom_admin/order_list.html', {
         'orders': orders,
         'status': status,
@@ -196,7 +201,10 @@ def order_edit(request, pk):
     if request.method == 'POST':
         form = OrderForm(request.POST, instance=order)
         if form.is_valid():
-            form.save()
+            saved_order = form.save(commit=False)
+            if 'total_bill' not in form.changed_data and saved_order.sub_total is not None and saved_order.delivery_charge is not None:
+                saved_order.total_bill = saved_order.sub_total + saved_order.delivery_charge
+            saved_order.save()
             messages.success(request, 'Order updated successfully.')
             return redirect('custom_admin:order_detail', pk=order.pk)
     else:
@@ -253,7 +261,7 @@ def single_page_list(request):
     query = request.GET.get('q', '').strip()
     pages = SinglePage.objects.annotate(order_count=Count('orders')).select_related('linked_product').prefetch_related('bundles').all()
     if query:
-        pages = pages.filter(title__icontains=query) | pages.filter(slug__icontains=query)
+        pages = pages.filter(Q(title__icontains=query) | Q(slug__icontains=query))
     return render(request, 'custom_admin/single_page_list.html', {'pages': pages, 'query': query})
 
 
