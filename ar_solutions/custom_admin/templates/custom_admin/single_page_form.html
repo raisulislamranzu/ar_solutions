@@ -73,12 +73,12 @@
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Page Title / Product Name <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold">Page Title / Product Name <span class="text-danger required-star">*</span></label>
                                     {{ form.title }}
                                     <small class="text-muted">Main page headline and browser tab title.</small>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">URL Slug <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold">URL Slug <span class="text-danger required-star">*</span></label>
                                     <div class="input-group">
                                         <span class="input-group-text text-muted">/</span>
                                         {{ form.slug }}
@@ -131,7 +131,7 @@
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-12">
-                                    <label class="form-label fw-bold">Hero Headline Title <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold">Hero Headline Title <span class="text-danger required-star">*</span></label>
                                     {{ form.hero_title }}
                                 </div>
                                 <div class="col-md-12">
@@ -252,7 +252,7 @@
                                     <small class="text-muted">Original price shown with strikethrough.</small>
                                 </div>
                                 <div class="col-md-4">
-                                    <label class="form-label fw-bold">Offer / Starting Price (৳) <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold">Offer / Starting Price (৳) <span class="text-danger required-star">*</span></label>
                                     {{ form.discount_price }}
                                     <small class="text-muted">Featured big discount price.</small>
                                 </div>
@@ -375,8 +375,8 @@
                                 <table class="table table-hover mb-0 align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Package Name <span class="text-danger">*</span></th>
-                                            <th style="width:130px;">Price (৳) <span class="text-danger">*</span></th>
+                                            <th>Package Name <span class="text-danger required-star">*</span></th>
+                                            <th style="width:130px;">Price (৳) <span class="text-danger required-star">*</span></th>
                                             <th style="width:140px;">Old Price (৳)</th>
                                             <th style="width:90px;">Qty</th>
                                             <th style="width:80px;">Default?</th>
@@ -496,17 +496,25 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 2. Highlight tabs that contain form errors
+    // 2. Highlight tabs that contain actual validation errors (only when form submission failed)
+    {% if form.errors or formset.errors or images_formset.errors %}
     document.querySelectorAll('.tab-pane').forEach(pane => {
-        if (pane.querySelector('.text-danger') || pane.querySelector('.is-invalid')) {
+        const errorElements = Array.from(pane.querySelectorAll('.text-danger, .is-invalid, .invalid-feedback, .errorlist')).filter(el => {
+            return !el.classList.contains('required-star') && el.textContent.trim() !== '*';
+        });
+
+        if (errorElements.length > 0) {
             const tabId = pane.id;
             const tabBtn = document.querySelector(`[data-bs-target="#${tabId}"]`);
             if (tabBtn) {
                 tabBtn.classList.add('text-danger', 'fw-bold');
-                tabBtn.innerHTML += ' <span class="badge bg-danger rounded-pill">!</span>';
+                if (!tabBtn.querySelector('.badge.bg-danger')) {
+                    tabBtn.innerHTML += ' <span class="badge bg-danger rounded-pill ms-1">!</span>';
+                }
             }
         }
     });
+    {% endif %}
 
     // 3. Dynamic add bundle row
     const addBundleBtn = document.getElementById('add-bundle-row');
