@@ -237,8 +237,7 @@
                                                         {% for img_form in images_formset %}
                                                         <tr>
                                                             <td>
-                                                                {% if img_form.instance.pk and img_form.instance.image
-                                                                %}
+                                                                {% if img_form.instance.pk and img_form.instance.image %}
                                                                 <img src="{{ img_form.instance.image.url }}" width="60"
                                                                     height="48"
                                                                     style="object-fit:cover;border-radius:4px;border:1px solid #dee2e6;">
@@ -251,8 +250,7 @@
                                                                 {{ img_form.id }}
                                                                 {{ img_form.image }}
                                                                 {% if img_form.image.errors %}
-                                                                <div class="text-danger small">{{ img_form.image.errors
-                                                                    }}</div>
+                                                                <div class="text-danger small">{{ img_form.image.errors }}</div>
                                                                 {% endif %}
                                                             </td>
                                                             <td>{{ img_form.order }}</td>
@@ -425,13 +423,11 @@
                                             <td>
                                                 {{ bundle_form.id }}
                                                 {{ bundle_form.name }}
-                                                {% if bundle_form.name.errors %}<div class="text-danger small">{{
-                                                    bundle_form.name.errors }}</div>{% endif %}
+                                                {% if bundle_form.name.errors %}<div class="text-danger small">{{ bundle_form.name.errors }}</div>{% endif %}
                                             </td>
                                             <td>
                                                 {{ bundle_form.price }}
-                                                {% if bundle_form.price.errors %}<div class="text-danger small">{{
-                                                    bundle_form.price.errors }}</div>{% endif %}
+                                                {% if bundle_form.price.errors %}<div class="text-danger small">{{ bundle_form.price.errors }}</div>{% endif %}
                                             </td>
                                             <td>{{ bundle_form.original_price }}</td>
                                             <td>{{ bundle_form.quantity }}</td>
