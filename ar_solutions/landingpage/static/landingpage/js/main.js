@@ -637,6 +637,101 @@ function calculateSinglePageTotal() {
   if (priceEl) priceEl.innerText = '৳ ' + Math.round(bundlePrice);
   if (chargeEl) chargeEl.innerText = '৳ ' + Math.round(deliveryCharge);
   if (totalEl) totalEl.innerText = '৳ ' + Math.round(total);
+
+  // Update mobile sticky bottom bar with selected package amount
+  const stickyPriceLabel = document.getElementById('stickyPriceLabel');
+  const stickyPriceDisplay = document.getElementById('stickyPriceDisplay');
+  if (stickyPriceLabel) stickyPriceLabel.innerText = 'প্যাকেজ মূল্য';
+  if (stickyPriceDisplay) stickyPriceDisplay.innerText = '৳ ' + Math.round(bundlePrice);
+}
+
+function scrollToAndFocus(el, message) {
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => {
+    el.focus();
+    el.classList.add('ring-4', 'ring-rose-400', 'border-rose-500');
+    if (message && typeof el.setCustomValidity === 'function') {
+      el.setCustomValidity(message);
+      if (typeof el.reportValidity === 'function') {
+        el.reportValidity();
+      }
+      const onInput = () => {
+        el.setCustomValidity('');
+        el.classList.remove('ring-4', 'ring-rose-400', 'border-rose-500');
+        el.removeEventListener('input', onInput);
+      };
+      el.addEventListener('input', onInput);
+    }
+    setTimeout(() => {
+      el.classList.remove('ring-4', 'ring-rose-400');
+    }, 2500);
+  }, 350);
+}
+
+function handleStickyOrderClick(e) {
+  if (e) e.preventDefault();
+  const form = document.getElementById('singlePageOrderForm');
+  if (!form) return;
+
+  const nameInput = document.getElementById('name') || form.querySelector('input[name="customer_name"]');
+  const phoneInput = document.getElementById('phone') || form.querySelector('input[name="phone_number"]');
+  const addressInput = document.getElementById('address') || form.querySelector('textarea[name="address"]');
+
+  // Check mandatory fields in sequence:
+  // 1. Name
+  if (nameInput && !nameInput.value.trim()) {
+    scrollToAndFocus(nameInput, 'আপনার সম্পূর্ণ নাম লিখুন');
+    return;
+  }
+
+  // 2. Mobile Number (11 digits required)
+  if (phoneInput) {
+    const phoneVal = phoneInput.value.trim();
+    if (!phoneVal) {
+      scrollToAndFocus(phoneInput, '১১ ডিজিটের মোবাইল নাম্বার লিখুন');
+      return;
+    }
+    const phonePattern = /^01[0-9]{9}$/;
+    if (!phonePattern.test(phoneVal)) {
+      scrollToAndFocus(phoneInput, 'সঠিক ১১ ডিজিটের মোবাইল নাম্বার দিন (যেমন: 01712345678)');
+      return;
+    }
+  }
+
+  // 3. Address
+  if (addressInput && !addressInput.value.trim()) {
+    scrollToAndFocus(addressInput, 'আপনার সম্পূর্ণ ঠিকানা (বাসা/রোড/এলাকা/জেলা) লিখুন');
+    return;
+  }
+
+  // 4. Ensure package is selected
+  const checkedBundle = form.querySelector('input[name="bundle_id"]:checked');
+  if (!checkedBundle) {
+    const bundleSection = document.getElementById('bundleOptionsContainer') || form;
+    bundleSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // All mandatory fields are valid -> Place the order directly!
+  const stickyBtn = document.getElementById('stickyOrderBtn');
+  const mainBtn = document.getElementById('submitBtn');
+  if (stickyBtn) {
+    stickyBtn.disabled = true;
+    stickyBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> অর্ডার প্রসেসিং হচ্ছে...';
+    stickyBtn.classList.add('opacity-75');
+  }
+  if (mainBtn) {
+    mainBtn.disabled = true;
+    mainBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> প্রসেসিং হচ্ছে...';
+    mainBtn.classList.add('opacity-75');
+  }
+
+  if (typeof form.requestSubmit === 'function') {
+    form.requestSubmit();
+  } else {
+    form.submit();
+  }
 }
 
 function initSinglePage() {
@@ -714,13 +809,24 @@ function initSinglePage() {
   // 5. Initial calculation
   calculateSinglePageTotal();
 
-  // 6. Single page form submit feedback
+  // 6. Sticky bottom button click listener
+  const stickyBtn = document.getElementById('stickyOrderBtn');
+  if (stickyBtn) {
+    stickyBtn.addEventListener('click', handleStickyOrderClick);
+  }
+
+  // 7. Single page form submit feedback
   if (singleOrderForm) {
     singleOrderForm.addEventListener('submit', function () {
       const btn = document.getElementById('submitBtn');
+      const sBtn = document.getElementById('stickyOrderBtn');
       if (btn) {
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> প্রসেসিং হচ্ছে...';
         btn.classList.add('opacity-75');
+      }
+      if (sBtn) {
+        sBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> অর্ডার প্রসেসিং হচ্ছে...';
+        sBtn.classList.add('opacity-75');
       }
     });
   }
@@ -729,6 +835,8 @@ function initSinglePage() {
 // Global Aliases so template inline handlers (onclick, onchange) work in all contexts
 window.calculateTotal = calculateSinglePageTotal;
 window.calculateSinglePageTotal = calculateSinglePageTotal;
+window.handleStickyOrderClick = handleStickyOrderClick;
+window.scrollToAndFocus = scrollToAndFocus;
 window.switchMainImage = switchMainImage;
 window.navigateGallery = navigateGallery;
 window.startAutoScroll = startAutoScroll;

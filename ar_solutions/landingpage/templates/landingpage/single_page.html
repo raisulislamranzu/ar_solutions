@@ -535,13 +535,16 @@
 
     <!-- Sticky Bottom Bar for Mobile -->
     <div class="sticky-bottom-bar md:hidden flex justify-between items-center gap-3">
-        <div class="text-left">
-            <span class="block text-[11px] text-slate-500 leading-none">শুরুর মূল্য</span>
-            <span class="block text-lg font-bold text-brand-green leading-tight">৳{{ page.discount_price|floatformat:0 }}</span>
+        <div class="text-left shrink-0">
+            <span id="stickyPriceLabel" class="block text-[11px] text-slate-500 leading-none font-medium">প্যাকেজ মূল্য</span>
+            <span id="stickyPriceDisplay" class="block text-lg font-bold text-brand-green leading-tight">৳{% if page.bundles.first %}{{ page.bundles.first.price|floatformat:0 }}{% else %}{{ page.discount_price|floatformat:0 }}{% endif %}</span>
         </div>
-        <a href="#order-form" class="flex-grow pulse-btn bg-brand-green text-white text-base font-bold py-3 px-5 rounded-xl shadow-md text-center flex justify-center items-center gap-2">
-            <i class="fa-solid fa-cart-shopping"></i> {{ page.header_cta_text|default:"অর্ডার করুন" }}
-        </a>
+        <button type="button" 
+                id="stickyOrderBtn" 
+                onclick="handleStickyOrderClick(event)"
+                class="flex-grow pulse-btn bg-brand-green hover:bg-brand-greenHover text-white text-base font-bold py-3 px-4 rounded-xl shadow-md text-center flex justify-center items-center gap-2 cursor-pointer transition active:scale-95">
+            <i class="fa-solid fa-circle-check"></i> <span id="stickyOrderBtnText">{{ page.submit_button_text|default:"অর্ডার কনফার্ম করুন" }}</span>
+        </button>
     </div>
 
     <!-- Static JavaScript file containing all interactive features -->
