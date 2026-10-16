@@ -1,5 +1,5 @@
 """
-WSGI config for ar_solutions project.
+WSGI config for ar_solutions .
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
